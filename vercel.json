@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "name": "017-sprint-03-week-01-bloggers-app-homework",
+
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["src/**/*.swagger.yml"]
+      }
+    }
+  ],
+
+  "routes": [{ "src": "/(.*)", "dest": "src/index.ts" }]
+}

@@ -1,0 +1,610 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+
+securitySchemes:
+  BasicAuth:
+    type: http
+    scheme: basic
+
+tags:
+  - name: Drivers
+    description: API for managing drivers
+
+paths:
+  /api/drivers:
+    get:
+      summary: Get a paginated and sorted list of drivers
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [ createdAt, name, email ]
+            default: createdAt
+          description: Field to sort by
+        - in: query
+          name: sortDirection
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            default: desc
+          description: Sort direction
+        - in: query
+          name: searchDriverNameTerm
+          schema:
+            type: string
+          required: false
+          description: Search term for driver name
+        - in: query
+          name: searchDriverEmailTerm
+          schema:
+            type: string
+          required: false
+          description: Search term for driver email
+        - in: query
+          name: searchVehicleMakeTerm
+          schema:
+            type: string
+          required: false
+          description: Search term for vehicle make
+      responses:
+        200:
+          description: List of all drivers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverListPaginatedOutput'
+    post:
+      summary: Add a new driver
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverCreateInput'
+      responses:
+        201:
+          description: The driver was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverOutput'
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+
+  /api/drivers/{id}:
+    get:
+      summary: Get a driver by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the driver
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      responses:
+        200:
+          description: The requested driver
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverOutput'
+        404:
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+    put:
+      summary: Update a driver by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the driver
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdateInput'
+      responses:
+        204:
+          description: Driver updated successfully
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+        404:
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+    delete:
+      summary: Delete a driver by ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the driver
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      responses:
+        204:
+          description: Driver deleted successfully
+        400:
+          description: Driver is currently on a job (has unfinished ride)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+        404:
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+  /api/drivers/{id}/rides:
+    get:
+      summary: Get a paginated and sorted list of rides by driver ID
+      tags: [ Drivers ]
+      security:
+        - BasicAuth: [ ]
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [ createdAt, clientName, price, startedAt, finishedAt ]
+            default: createdAt
+          description: Field to sort by
+        - in: query
+          name: sortDirection
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            default: desc
+          description: Sort direction
+
+      responses:
+        200:
+          description: List of all rides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RideListPaginatedOutput'
+        404:
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorListOutput'
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    DriverOutput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [ drivers ]
+              example: drivers
+            id:
+              type: string
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            attributes:
+              type: object
+              required:
+                - name
+                - phoneNumber
+                - email
+                - vehicle
+                - createdAt
+              properties:
+                name:
+                  type: string
+                  example: Tom Rider
+                phoneNumber:
+                  type: string
+                  example: "123-456-7890"
+                email:
+                  type: string
+                  example: tom.rider@example.com
+                vehicle:
+                  type: object
+                  required:
+                    - make
+                    - model
+                    - year
+                    - licensePlate
+                    - features
+                  properties:
+                    make:
+                      type: string
+                      example: Toyota
+                    model:
+                      type: string
+                      example: Camry
+                    year:
+                      type: integer
+                      example: 2020
+                    licensePlate:
+                      type: string
+                      example: XYZ 1234
+                    description:
+                      type: string
+                      nullable: true
+                      example: A spacious SUV with leather seats and a sunroof
+                    features:
+                      type: array
+                      items:
+                        type: string
+                        enum: [ wi-fi, child-seat, pet-friendly ]
+                      example: [ wi-fi, pet-friendly ]
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: 2023-03-05T12:00:00Z
+
+    DriverListPaginatedOutput:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+              - id
+              - attributes
+            properties:
+              type:
+                type: string
+                enum: [ drivers ]
+                example: drivers
+              id:
+                type: string
+                example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+              attributes:
+                $ref: '#/components/schemas/DriverOutput/properties/data/properties/attributes'
+        meta:
+          $ref: '#/components/schemas/PaginatedOutput'
+    DriverCreateInput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [ Drivers ]
+              description: The resource type
+              example: drivers
+            attributes:
+              $ref: '#/components/schemas/DriverAttributes'
+
+    DriverUpdateInput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [ Drivers ]
+              description: The resource type
+              example: drivers
+            id:
+              type: string
+              description: The unique identifier of the driver
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            attributes:
+              $ref: '#/components/schemas/DriverAttributes'
+
+    DriverAttributes:
+      type: object
+      required:
+        - name
+        - phoneNumber
+        - email
+        - vehicleMake
+        - vehicleModel
+        - vehicleYear
+        - vehicleLicensePlate
+        - vehicleFeatures
+      properties:
+        name:
+          type: string
+          description: The full name of the driver
+          example: Tom Rider
+        phoneNumber:
+          type: string
+          description: The driver's phone number
+          example: 123-456-7890
+        email:
+          type: string
+          description: The driver's email address
+          example: tom.rider@example.com
+        vehicleMake:
+          type: string
+          description: The make of the vehicle
+          example: Toyota
+        vehicleModel:
+          type: string
+          description: The model of the vehicle
+          example: Camry
+        vehicleYear:
+          type: integer
+          format: int32
+          description: The year the vehicle was manufactured
+          example: 2025
+        vehicleLicensePlate:
+          type: string
+          description: The vehicle's license plate number
+          example: XYZ 1234
+        vehicleDescription:
+          type: string
+          nullable: true
+          description: A description of the vehicle, including any notable features or conditions
+          example: A spacious SUV with leather seats and a sunroof
+        vehicleFeatures:
+          type: array
+          items:
+            type: string
+            enum: [ wi-fi, child-seat, pet-friendly ]
+          description: Features available in the vehicle. Choose from the provided options
+          example: [ wi-fi, pet-friendly ]
+    RideListPaginatedOutput:
+      type: object
+      required:
+        - meta
+        - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginatedOutput'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RideDataOutput'
+
+    RideDataOutput:
+      type: object
+      required:
+        - type
+        - id
+        - attributes
+      properties:
+        type:
+          type: string
+          enum: [ 'rides' ]
+          description: The resource type (must be 'rides')
+          example: rides
+        id:
+          type: string
+          description: Unique identifier for the ride
+          example: 60c72b2f9b1e8a001c8e4f1a
+        attributes:
+          type: object
+          required:
+            - clientName
+            - driver
+            - vehicle
+            - price
+            - currency
+            - addresses
+          properties:
+            clientName:
+              type: string
+              description: Name of the client who requested the ride
+              example: Alice Johnson
+            driver:
+              type: object
+              required:
+                - id
+                - name
+              properties:
+                id:
+                  type: string
+                  description: The unique identifier for the driver
+                  example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+                name:
+                  type: string
+                  description: The full name of the driver
+                  example: Tom Rider
+            vehicle:
+              type: object
+              required:
+                - licensePlate
+                - name
+              properties:
+                licensePlate:
+                  type: string
+                  example: XYZ 1234
+                  description: License plate of the vehicle
+                name:
+                  type: string
+                  example: Toyota Camry
+                  description: Model of the vehicle
+            price:
+              type: number
+              format: float
+              example: 15.75
+              description: Cost of the trip
+            currency:
+              type: string
+              enum: [ usd, eur ]
+              example: usd
+              description: Currency in which the cost is specified
+            startedAt:
+              type: string
+              format: date-time
+              nullable: true
+              example: 2023-03-01T14:30:00Z
+              description: Date and time when the ride started
+            finishedAt:
+              type: string
+              format: date-time
+              nullable: true
+              example: null
+              description: Date and time when the ride finished (if applicable)
+            addresses:
+              type: object
+              required:
+                - from
+                - to
+              properties:
+                from:
+                  type: string
+                  example: 123 Main St, Cityville
+                  description: Starting address of the ride
+                to:
+                  type: string
+                  example: 456 Elm St, Townsville
+                  description: Ending address of the ride
+    PaginatedOutput:
+      type: object
+      required:
+        - page
+        - pageSize
+        - pageCount
+        - totalCount
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page
+          example: 10
+        pageCount:
+          type: integer
+          description: Total number of pages available
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of items across all pages
+          example: 100
+    ValidationErrorOutput:
+      type: object
+      required:
+        - status
+        - detail
+        - source
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code of the error
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "Name must be at least 2 characters long"
+        source:
+          type: object
+          properties:
+            pointer:
+              type: string
+              description: JSON pointer to the field that caused the error
+              example: "name"
+        code:
+          type: string
+          nullable: true
+          description: Optional error code
+          example: null
+          default: null
+
+    ValidationErrorListOutput:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationErrorOutput'
+          description: List of validation errors
