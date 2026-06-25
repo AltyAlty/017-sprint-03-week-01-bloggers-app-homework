@@ -6,19 +6,19 @@ import { HttpStatuses } from '../../types/http-statuses';
 import { ValidationErrorListOutputDTO } from '../../types/validation/validation-error-list.output-dto';
 import { ValidationErrorOutputDTO } from '../../types/validation/validation-error.output-dto';
 
-/*Функция "createErrorMessages()" формирует объект с сообщениями об ошибках валидации, отправляемых клиенту.*/
+/*Функция для формирования объекта с сообщениями об ошибках валидации, отправляемых клиенту.*/
 export const createErrorMessages = (errors: ValidationErrorOutputDTO[]): ValidationErrorListOutputDTO => ({
   errorsMessages: errors,
 });
 
-/*Функция "mapToValidationErrorOutputDTO()" преобразовывает валидационные ошибки из библиотеки express-validator в
-формат Output DTO для сообщений об ошибках валидации, отправляемых клиенту.*/
+/*Функция для преобразования валидационных ошибок из библиотеки express-validator в формат Output DTO для сообщений об
+ошибках валидации, отправляемых клиенту.*/
 const mapToValidationErrorOutputDTO = (error: ValidationError): ValidationErrorOutputDTO => {
   const expressError: FieldValidationError = error as unknown as FieldValidationError;
   return { field: expressError.path, message: expressError.msg };
 };
 
-/*Middleware "inputValidationResultMiddleware" формирует ответ клиенту об ошибках валидации.*/
+/*Middleware для формирования ответа клиенту об ошибках валидации.*/
 export const inputValidationResultMiddleware = (req: Request<{}, {}, {}, {}>, res: Response, next: NextFunction) => {
   /*Если валидация при помощи библиотеки express-validator обнаруживает ошибки валидации, то информация об этих ошибках
   добавляется в объект запроса. Поэтому пытаемся здесь извлечь такие ошибки. Далее форматируем ошибки валидации при

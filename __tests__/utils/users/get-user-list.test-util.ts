@@ -11,7 +11,7 @@ export const getUserList = async (
   expectedStatus?: HttpStatuses,
   basicAuthToken?: string
 ): Promise<PaginatedUserListOutputDTO> => {
-  const url = urlWithPagination ?? `${SETTINGS.USERS_PATH}${SETTINGS.GET_USERS_LIST_PATH}`;
+  const url = urlWithPagination ?? `${SETTINGS.USERS_PATH}${SETTINGS.GET_USER_LIST_PATH}`;
   const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
   const testBasicAuthToken = basicAuthToken ?? generateBasicAuthToken();
   const getUserListResponse = await request(app).get(url).set('Authorization', testBasicAuthToken).expect(testStatus);

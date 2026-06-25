@@ -4,9 +4,13 @@ import { blogsService } from '../../application/blogs.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { DeleteBlogByIdUriInputDTO } from '../input-dto/uri/delete-blog-by-id-uri.input-dto';
 
-/*Функция-обработчик "deleteBlogByIdHandler()" для DELETE-запросов по удалению блога по ID, используя URI-параметры.*/
-export const deleteBlogByIdHandler = async (req: Request<{ id: string }>, res: Response<void | ExtensionType[]>) => {
+/*Функция-обработчик для DELETE-запросов по удалению блога по ID, используя URI-параметры.*/
+export const deleteBlogByIdHandler = async (
+  req: Request<DeleteBlogByIdUriInputDTO>,
+  res: Response<void | ExtensionType[]>
+) => {
   try {
     /*Получаем ID блога.*/
     const blogId: string = req.params.id;

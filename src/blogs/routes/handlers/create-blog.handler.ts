@@ -8,20 +8,20 @@ import { HttpStatuses } from '../../../core/types/http-statuses';
 import { BlogOutputDTO } from '../output-dto/blog.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 
-/*Функция-обработчик "createBlogHandler()" для POST-запросов по добавлению блога.*/
+/*Функция-обработчик для POST-запросов по добавлению блога.*/
 export const createBlogHandler = async (
   req: Request<{}, {}, CreateBlogInputDTO>,
   res: Response<BlogOutputDTO | ExtensionType[]>
 ) => {
   try {
     /*Просим сервис "blogsService" создать блог.*/
-    const createdBlogResult: Result<{ blogId: string }> = await blogsService.create(req.body);
+    const createdBlogResult: Result<{ createdBlogId: string }> = await blogsService.create(req.body);
     /*Получаем HTTP-статус операции по созданию блога.*/
     const createdBlogResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(createdBlogResult.status);
 
     /*Просим query-сервис "blogsQueryService" найти созданный блог по ID.*/
     const blogResult: Result<{ blogOutput: BlogOutputDTO } | null> = await blogsQueryService.findById(
-      createdBlogResult.data.blogId
+      createdBlogResult.data.createdBlogId
     );
 
     /*Получаем HTTP-статус операции по поиску созданного блога по ID.*/

@@ -2,8 +2,7 @@ import { PaginatedCommentListOutputDTO } from '../../routes/output-dto/paginated
 import { CommentOutputDTO } from '../../routes/output-dto/comment.output-dto';
 import { CommentDBType } from '../types/comment-db.type';
 
-/*Функция "mapToPaginatedCommentListOutputDTO()" преобразовывает комментарии из БД в подготовленные для пагинации
-комментарии.*/
+/*Функция для преобразования комментариев из БД в подготовленные для пагинации комментарии.*/
 export const mapToPaginatedCommentListOutputDTO = (
   comments: CommentDBType[],
   meta: { pageNumber: number; pageSize: number; totalCount: number }

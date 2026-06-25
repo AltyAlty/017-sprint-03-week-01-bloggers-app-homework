@@ -1,25 +1,25 @@
 import { Filter, ObjectId } from 'mongodb';
 import { PostType } from '../application/types/post.type';
 import { db } from '../../db/mongodb/mongo.db';
-import { GetPostListQueryInputDTO } from '../routes/input-dto/get-post-list-query.input-dto';
+import { GetPostListQueryInputDTO } from '../routes/input-dto/query/get-post-list-query.input-dto';
 import { SortDirection } from '../../core/types/pagination/sort-direction';
-import { PostSortFieldInputDTO } from '../routes/input-dto/post-sort-field.input-dto';
+import { PostSortFieldQueryInputDTO } from '../routes/input-dto/query/post-sort-field-query.input-dto';
 import { PostDBType } from './types/post-db.type';
 
-/*Query-репозиторий "postsQueryRepository" для работы с постами в БД.*/
+/*Query-репозиторий для работы с постами в БД.*/
 export const postsQueryRepository = {
-  /*Метод "findById()" для поиска поста по ID в БД.*/
-  async findById(postId: string): Promise<PostDBType | null> {
+  /*Метод для поиска поста по ID в БД.*/
+  async findById(id: string): Promise<PostDBType | null> {
     /*Просим коллекцию "postsCollection" найти пост по ID в БД.*/
-    const result: PostDBType | null = await db.postsCollection.findOne({ _id: new ObjectId(postId) });
+    const result: PostDBType | null = await db.postsCollection.findOne({ _id: new ObjectId(id) });
     /*Если пост не был найден, то возвращаем null.*/
     if (!result) return null;
     /*Если пост был найден, то возвращаем его.*/
     return result;
   },
 
-  /*Метод "findMany()" для поиска постов в БД.*/
-  async findMany(
+  /*Метод для поиска постов в БД.*/
+  async findAll(
     queryDTO: GetPostListQueryInputDTO,
     blogId?: string
   ): Promise<{ items: PostDBType[]; totalCount: number }> {
@@ -32,7 +32,7 @@ export const postsQueryRepository = {
     }: {
       pageNumber: number;
       pageSize: number;
-      sortBy: PostSortFieldInputDTO;
+      sortBy: PostSortFieldQueryInputDTO;
       sortDirection: SortDirection;
     } = queryDTO;
 

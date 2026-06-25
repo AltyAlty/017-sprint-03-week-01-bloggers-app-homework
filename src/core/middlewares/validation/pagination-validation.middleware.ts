@@ -15,7 +15,7 @@ export const defaultPaginationSettings: DefaultPaginationSettingsType<string> = 
   sortDirection: SETTINGS.DEFAULT_PAGINATION_SORT_DIRECTION,
 };
 
-/*Middleware "paginationValidationMiddleware" валидирует query-параметры, касающиеся пагинации:
+/*Middleware для валидации query-параметров, касающихся пагинации:
 1. "pageNumber": номер страницы должен быть строкой в виде числа, большего 0.
 2. "pageSize": размер страницы должен быть строкой в виде числа из диапазона от 1 до 100.
 3. "sortBy": поле сортировки данных на странице должно входить в список полей, по которым разрешена сортировка.

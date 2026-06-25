@@ -5,6 +5,7 @@ import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { BlogOutputDTO } from '../output-dto/blog.output-dto';
+import { GetBlogByIdUriInputDTO } from '../input-dto/uri/get-blog-by-id-uri.input-dto';
 
 /*"Request" из Express используется для типизации параметра "req", а "Response" из Express используется для типизации
 параметра "res".
@@ -14,11 +15,11 @@ import { BlogOutputDTO } from '../output-dto/blog.output-dto';
 1. На первом месте в типе идут URI-параметры.
 2. На втором месте в типе идет "ResBody". Относится к параметру "res" внутри запроса, то есть что будет возвращено.
 3. На третьем месте в типе идет "ReqBody". Это то, что приходит в body в запросе.
-4. На четвертом месте в типе идут Query-параметры.
+4. На четвертом месте в типе идут query-параметры.
 
-Функция-обработчик "getBlogByIdHandler()" для GET-запросов по получению блога по ID, используя URI-параметры.*/
+Функция-обработчик для GET-запросов по получению блога по ID, используя URI-параметры.*/
 export const getBlogByIdHandler = async (
-  req: Request<{ id: string }>,
+  req: Request<GetBlogByIdUriInputDTO>,
   res: Response<BlogOutputDTO | ExtensionType[]>
 ) => {
   try {

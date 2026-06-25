@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { errorsHandler } from '../../../core/errors/errors.handler';
-import { UpdatePostInputDTO } from '../input-dto/update-post.input-dto';
+import { UpdatePostByIdInputDTO } from '../input-dto/update-post-by-id.input-dto';
 import { postsService } from '../../application/posts.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { UpdatePostByIdUriInputDTO } from '../input-dto/uri/update-post-by-id-uri.input-dto';
 
-/*Функция-обработчик "updatePostByIdHandler()" для PUT-запросов по изменению поста по ID, используя URI-параметры.*/
+/*Функция-обработчик для PUT-запросов по изменению поста по ID, используя URI-параметры.*/
 export const updatePostByIdHandler = async (
-  req: Request<{ id: string }, {}, UpdatePostInputDTO>,
+  req: Request<UpdatePostByIdUriInputDTO, {}, UpdatePostByIdInputDTO>,
   res: Response<void | ExtensionType[]>
 ) => {
   try {

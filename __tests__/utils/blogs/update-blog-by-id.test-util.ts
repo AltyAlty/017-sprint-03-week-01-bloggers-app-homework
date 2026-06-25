@@ -4,16 +4,16 @@ import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../auth/generate-admin-auth-token.test-util';
 import { SETTINGS } from '../../../src/core/settings/settings';
 import { getUpdateBlogInputDTO } from './get-update-blog-input-dto.test-util';
-import { UpdateBlogInputDTO } from '../../../src/blogs/routes/input-dto/update-blog.input-dto';
+import { UpdateBlogByIdInputDTO } from '../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
 
 export const updateBlogById = async (
   app: Express,
   blogId: string | any,
-  blogDTO?: UpdateBlogInputDTO | any,
+  blogDTO?: UpdateBlogByIdInputDTO | any,
   expectedStatus?: HttpStatuses,
   basicAuthToken?: string
 ): Promise<any> => {
-  const testUpdateBlogData: UpdateBlogInputDTO = { ...getUpdateBlogInputDTO(), ...blogDTO };
+  const testUpdateBlogData: UpdateBlogByIdInputDTO = { ...getUpdateBlogInputDTO(), ...blogDTO };
   const testStatus = expectedStatus ?? HttpStatuses.NoContent_204;
   const testBasicAuthToken = basicAuthToken ?? generateBasicAuthToken();
 

@@ -2,7 +2,7 @@ import { PaginatedPostListOutputDTO } from '../../routes/output-dto/paginated-po
 import { PostOutputDTO } from '../../routes/output-dto/post.output-dto';
 import { PostDBType } from '../types/post-db.type';
 
-/*Функция "mapToPaginatedPostListOutputDTO()" преобразовывает посты из БД в подготовленные для пагинации посты.*/
+/*Функция для преобразования постов из БД в подготовленные для пагинации посты.*/
 export const mapToPaginatedPostListOutputDTO = (
   posts: PostDBType[],
   meta: { pageNumber: number; pageSize: number; totalCount: number }

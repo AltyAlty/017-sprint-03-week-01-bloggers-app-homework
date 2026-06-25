@@ -4,10 +4,13 @@ import { commentsService } from '../../application/comments.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { DeleteCommentByIdUriInputDTO } from '../input-dto/uri/delete-comment-by-id-uri.input-dto';
 
-/*Функция-обработчик "deleteCommentByIdHandler()" для DELETE-запросов по удалению комментария по ID, используя
-URI-параметры.*/
-export const deleteCommentByIdHandler = async (req: Request<{ id: string }>, res: Response<void | ExtensionType[]>) => {
+/*Функция-обработчик для DELETE-запросов по удалению комментария по ID, используя URI-параметры.*/
+export const deleteCommentByIdHandler = async (
+  req: Request<DeleteCommentByIdUriInputDTO>,
+  res: Response<void | ExtensionType[]>
+) => {
   try {
     /*Получаем ID комментария.*/
     const commentId: string = req.params.id;

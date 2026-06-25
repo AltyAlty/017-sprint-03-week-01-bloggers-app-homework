@@ -1,4 +1,4 @@
-import { CreateCommentInPostInputDTO } from '../../../src/comments/routes/input-dto/create-comment-in-post.input-dto';
+import { CreateCommentForPostInputDTO } from '../../../src/comments/routes/input-dto/create-comment-for-post.input-dto';
 import { Express } from 'express';
 import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/comment.output-dto';
 import { getCreateCommentInPostInputDTO } from '../comments/get-create-comment-in-post-input-dto.test-util';
@@ -10,10 +10,10 @@ export const createCommentInPost = async (
   app: Express,
   postId: string | any,
   accessToken: string | any,
-  commentDTO?: CreateCommentInPostInputDTO | any,
+  commentDTO?: CreateCommentForPostInputDTO | any,
   expectedStatus?: HttpStatuses
 ): Promise<CommentOutputDTO> => {
-  const testCreateCommentData: CreateCommentInPostInputDTO = { ...getCreateCommentInPostInputDTO(), ...commentDTO };
+  const testCreateCommentData: CreateCommentForPostInputDTO = { ...getCreateCommentInPostInputDTO(), ...commentDTO };
   const testStatus = expectedStatus ?? HttpStatuses.Created_201;
 
   const createCommentInPostResponse = await request(app)

@@ -5,12 +5,12 @@ import { generateBasicAuthToken } from '../auth/generate-admin-auth-token.test-u
 import request from 'supertest';
 import { SETTINGS } from '../../../src/core/settings/settings';
 import { getCreatePostInBlogInputDTO } from './get-create-post-in-blog-input-dto.test-util';
-import { CreatePostInBlogInputDTO } from '../../../src/posts/routes/input-dto/create-post-in-blog.input-dto';
+import { CreatePostForBlogByBlogIdInputDTO } from '../../../src/posts/routes/input-dto/create-post-for-blog-by-blog-id.input-dto';
 
 export const createPostInBlog = async (
   app: Express,
   blogId: string | any,
-  postDTO?: CreatePostInBlogInputDTO | any,
+  postDTO?: CreatePostForBlogByBlogIdInputDTO | any,
   expectedStatus?: HttpStatuses,
   basicAuthToken?: string
 ): Promise<PostOutputDTO> => {

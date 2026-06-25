@@ -1,9 +1,9 @@
 import nodemailer from 'nodemailer';
 import { SETTINGS } from '../../core/settings/settings';
 
-/*Адаптер "nodemailerAdapter" для работы с библиотекой nodemailer.*/
+/*Адаптер для работы с библиотекой nodemailer.*/
 export const nodemailerAdapter = {
-  /*Метод "sendEmail()" для отправки писем.*/
+  /*Метод для отправки писем.*/
   async sendMail(emailTo: string, subject: string, code: string, template: (code: string) => string): Promise<boolean> {
     try {
       /*Создаем транспортер - механизм для работы с почтой. В параметрах метода конфигурируем создаваемый транспортер.*/
@@ -32,7 +32,7 @@ export const nodemailerAdapter = {
         // text: "Did you ever ask for this?"
       });
 
-      console.log(info);
+      // console.log(info);
       return !!info;
     } catch (error) {
       throw error;

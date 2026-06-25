@@ -8,7 +8,7 @@ import { MeOutputDTO } from '../output-dto/me.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UserOutputDTO } from '../../../users/routes/output-dto/user.output-dto';
 
-/*Функция-обработчик "getAuthDataByTokenHandler()" для GET-запросов по получению данных пользователя по токену.*/
+/*Функция-обработчик для GET-запросов по получению данных пользователя по токену.*/
 export const getAuthDataByTokenHandler = async (
   req: Request<{}, {}, {}, {}, IdType>,
   res: Response<MeOutputDTO | ExtensionType[]>
@@ -16,7 +16,7 @@ export const getAuthDataByTokenHandler = async (
   try {
     /*Получаем ID пользователя.*/
     const userId: string = req.userId?.id as string;
-    /*Если ID пользователя получить не удалось, то сообщаем клиенту об отказе в аутентификации.*/
+    /*Если ID пользователя не был найден, то сообщаем клиенту об отказе в аутентификации.*/
     if (!userId) return res.sendStatus(HttpStatuses.Unauthorized_401);
     /*Просим query-сервис "usersQueryService" найти пользователя по ID.*/
     const userResult: Result<{ userOutput: UserOutputDTO } | null> = await usersQueryService.findById(userId);

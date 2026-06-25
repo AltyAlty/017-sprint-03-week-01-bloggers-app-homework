@@ -1,6 +1,6 @@
-import { UpdateBlogInputDTO } from '../../../src/blogs/routes/input-dto/update-blog.input-dto';
+import { UpdateBlogByIdInputDTO } from '../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
 
-export const getUpdateBlogInputDTO = (): UpdateBlogInputDTO => {
+export const getUpdateBlogInputDTO = (): UpdateBlogByIdInputDTO => {
   return {
     name: 'upd name 01',
     description: 'upd description 01',

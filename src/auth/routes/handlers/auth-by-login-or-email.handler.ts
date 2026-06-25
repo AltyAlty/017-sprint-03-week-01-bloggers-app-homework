@@ -7,7 +7,7 @@ import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result
 import { LoginOutputDTO } from '../output-dto/login.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 
-/*Функция-обработчик "authByLoginOrEmailHandler()" для POST-запросов по аутентификации пользователя по логину/email.*/
+/*Функция-обработчик для POST-запросов по аутентификации пользователя по логину/email.*/
 export const authByLoginOrEmailHandler = async (
   req: Request<{}, {}, LoginDataInputDTO>,
   res: Response<LoginOutputDTO | ExtensionType[]>
@@ -15,11 +15,17 @@ export const authByLoginOrEmailHandler = async (
   try {
     /*Получаем логин/email и пароль пользователя.*/
     const { loginOrEmail, password }: { loginOrEmail: string; password: string } = req.body;
+    /*Получаем имя устройства пользователя.*/
+    const deviceName: string = req.headers['user-agent'] || 'Unknown Device';
+    /*Получаем IP-адресс пользователя.*/
+    const ip: string = req.ip || req.socket.remoteAddress || '0.0.0.0';
 
     /*Просим сервис "authService" аутентифицировать пользователя по логину/email и паролю.*/
     const loginUserResult: Result<{ accessToken: string; refreshToken: string } | null> = await authService.loginUser(
       loginOrEmail,
-      password
+      password,
+      deviceName,
+      ip
     );
 
     /*Получаем HTTP-статус операции по аутентификации пользователя по логину/email и паролю.*/

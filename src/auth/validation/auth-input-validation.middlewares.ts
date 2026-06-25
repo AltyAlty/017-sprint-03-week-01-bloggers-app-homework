@@ -22,7 +22,7 @@ const passwordValidation = body('password')
   .isLength({ min: 6, max: 20 })
   .withMessage('Field "password" must be between 6 and 20 characters');
 
-/*Middleware "confirmationCodeValidation" проверяет, что поле "code":
+/*Middleware для проверки, что поле "code":
 1. Существует в запросе.
 2. Является строкой.
 3. Не является пустым.
@@ -53,7 +53,7 @@ export const confirmationCodeValidation = body('code')
     return true;
   });
 
-/*Middleware "registrationEmailResendingValidation" проверяет, что поле "email":
+/*Middleware для проверки, что поле "email":
 1. Существует в запросе.
 2. Является строкой.
 3. Не является пустым.
@@ -83,6 +83,6 @@ export const registrationEmailResendingValidation = body('email')
     return true;
   });
 
-/*Комбинируем вышеуказанные middlewares в один middleware "authUserPostInputValidation", чтобы использовать его для
-проверки запросов по аутентификации пользователя.*/
+/*Комбинируем вышеуказанные middlewares в один middleware для использования его при проверке запросов по аутентификации
+пользователя.*/
 export const authUserPostInputValidation = [loginOrEmailValidation, passwordValidation];

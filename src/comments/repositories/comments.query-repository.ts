@@ -1,27 +1,27 @@
 import { Filter, ObjectId } from 'mongodb';
 import { CommentType } from '../application/types/comment.type';
 import { db } from '../../db/mongodb/mongo.db';
-import { GetCommentListInPostQueryInputDTO } from '../routes/input-dto/get-comment-list-in-post-query.input-dto';
+import { GetCommentListByPostIdQueryInputDTO } from '../routes/input-dto/query/get-comment-list-by-post-id-query.input-dto';
 import { SortDirection } from '../../core/types/pagination/sort-direction';
-import { CommentSortFieldInputDTO } from '../routes/input-dto/comment-sort-field.input-dto';
+import { CommentSortFieldQueryInputDTO } from '../routes/input-dto/query/comment-sort-field-query.input-dto';
 import { CommentDBType } from './types/comment-db.type';
 
-/*Query-репозиторий "commentsQueryRepository" для работы с комментариями в БД.*/
+/*Query-репозиторий для работы с комментариями в БД.*/
 export const commentsQueryRepository = {
-  /*Метод "findById()" для поиска комментария по ID в БД.*/
-  async findById(commentId: string): Promise<CommentDBType | null> {
+  /*Метод для поиска комментария по ID в БД.*/
+  async findById(id: string): Promise<CommentDBType | null> {
     /*Просим коллекцию "commentsCollection" найти комментарий по ID в БД.*/
-    const comment: CommentDBType | null = await db.commentsCollection.findOne({ _id: new ObjectId(commentId) });
+    const comment: CommentDBType | null = await db.commentsCollection.findOne({ _id: new ObjectId(id) });
     /*Если комментарий не был найден, то возвращаем null.*/
     if (!comment) return null;
     /*Если комментарий был найден, то возвращаем его.*/
     return comment;
   },
 
-  /*Метод "findManyByPostId()" для поиска комментариев в посте по ID в БД.*/
-  async findManyByPostId(
+  /*Метод для поиска комментариев по ID поста в БД.*/
+  async findAllByPostId(
     postId: string,
-    queryDTO: GetCommentListInPostQueryInputDTO
+    queryDTO: GetCommentListByPostIdQueryInputDTO
   ): Promise<{ items: CommentDBType[]; totalCount: number }> {
     /*Создаем переменные на основе параметра "queryDTO" при помощи деструктуризации.*/
     const {
@@ -32,7 +32,7 @@ export const commentsQueryRepository = {
     }: {
       pageNumber: number;
       pageSize: number;
-      sortBy: CommentSortFieldInputDTO;
+      sortBy: CommentSortFieldQueryInputDTO;
       sortDirection: SortDirection;
     } = queryDTO;
 

@@ -1,6 +1,6 @@
-import { UpdateCommentInputDTO } from '../../../src/comments/routes/input-dto/update-comment.input-dto';
+import { UpdateCommentByIdInputDTO } from '../../../src/comments/routes/input-dto/update-comment-by-id.input-dto';
 
-export const getUpdateCommentInputDTO = (): UpdateCommentInputDTO => {
+export const getUpdateCommentInputDTO = (): UpdateCommentByIdInputDTO => {
   return {
     content: 'some updated comment content 001',
   };

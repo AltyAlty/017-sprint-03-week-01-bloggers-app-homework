@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { UpdateCommentInputDTO } from '../input-dto/update-comment.input-dto';
+import { UpdateCommentByIdInputDTO } from '../input-dto/update-comment-by-id.input-dto';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { commentsService } from '../../application/comments.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { UpdateCommentByIdUriInputDTO } from '../input-dto/uri/update-comment-by-id-uri.input-dto';
 
-/*Функция-обработчик "updateCommentByIdHandler()" для PUT-запросов по изменению комментария по ID, используя
-URI-параметры.*/
+/*Функция-обработчик для PUT-запросов по изменению комментария по ID, используя URI-параметры.*/
 export const updateCommentByIdHandler = async (
-  req: Request<{ id: string }, {}, UpdateCommentInputDTO>,
+  req: Request<UpdateCommentByIdUriInputDTO, {}, UpdateCommentByIdInputDTO>,
   res: Response<void | ExtensionType[]>
 ) => {
   try {

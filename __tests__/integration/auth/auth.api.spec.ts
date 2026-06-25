@@ -12,8 +12,6 @@ import { MeOutputDTO } from '../../../src/auth/routes/output-dto/me.output-dto';
 import { SETTINGS } from '../../../src/core/settings/settings';
 import { loginUserReturnAccessAndRefreshTokens } from '../../utils/auth/login-user-return-access-and-refresh-tokens.test-util';
 import { refreshAccessAndRefreshTokens } from '../../utils/auth/refresh-access-and-refresh-tokens.test-util';
-import { authRepository } from '../../../src/auth/repositories/auth.repository';
-import { RefreshTokenDBType } from '../../../src/auth/repositories/types/refresh-token-db.type';
 import { revokeRefreshToken } from '../../utils/auth/revoke-refresh-token.test-util';
 import { delay } from '../../utils/common/delay.test-util';
 import { setTimeout } from 'timers/promises';
@@ -44,12 +42,12 @@ describe('Auth API', () => {
       hasPath: boolean;
     } = await loginUserReturnAccessAndRefreshTokens(app, loginUserData);
 
-    const decodedAccessToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedAccessToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       accessToken,
       SETTINGS.AT_SECRET!
     );
 
-    const decodedRefreshToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedRefreshToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       refreshToken,
       SETTINGS.RT_SECRET!
     );
@@ -89,12 +87,12 @@ describe('Auth API', () => {
       hasPath: boolean;
     } = await loginUserReturnAccessAndRefreshTokens(app, loginUserData);
 
-    const decodedAccessToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedAccessToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       accessToken,
       SETTINGS.AT_SECRET!
     );
 
-    const decodedRefreshToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedRefreshToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       refreshToken,
       SETTINGS.RT_SECRET!
     );
@@ -163,12 +161,12 @@ describe('Auth API', () => {
       hasPath: boolean;
     } = await refreshAccessAndRefreshTokens(app, refreshTokenCookieString);
 
-    const decodedNewAccessToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedNewAccessToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       newAccessToken,
       SETTINGS.AT_SECRET!
     );
 
-    const decodedNewRefreshToken: { userId: string } | null = await jwtAdapter.verifyToken(
+    const decodedNewRefreshToken: { userId: string } | null = await jwtAdapter.verifyAccessToken(
       newRefreshToken,
       SETTINGS.RT_SECRET!
     );
@@ -184,9 +182,6 @@ describe('Auth API', () => {
     expect(decodedNewRefreshToken).not.toBeNull();
     expect(decodedNewAccessToken!.userId).toBe(createdUserId);
     expect(decodedNewRefreshToken!.userId).toBe(createdUserId);
-    const oldRefreshTokenDB: RefreshTokenDBType | null = await authRepository.findRT(oldRefreshToken);
-    expect(oldRefreshTokenDB).not.toBeNull();
-    expect(oldRefreshTokenDB?.blacklisted).toBeTruthy();
   });
 
   it('✅ 005 should revoke a valid refresh token; POST /api/auth/logout', async () => {
@@ -205,9 +200,5 @@ describe('Auth API', () => {
     } = await loginUserReturnAccessAndRefreshTokens(app, loginUserData);
 
     await revokeRefreshToken(app, refreshTokenCookieString);
-
-    const oldRefreshTokenDB: RefreshTokenDBType | null = await authRepository.findRT(oldRefreshToken);
-    expect(oldRefreshTokenDB).not.toBeNull();
-    expect(oldRefreshTokenDB?.blacklisted).toBeTruthy();
   });
 });

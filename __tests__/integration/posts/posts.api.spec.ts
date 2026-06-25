@@ -4,7 +4,7 @@ import { SETTINGS } from '../../../src/core/settings/settings';
 import { createPost } from '../../utils/posts/create-post.test-util';
 import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-dto';
 import { getPostById } from '../../utils/posts/get-post-by-id.test-util';
-import { UpdatePostInputDTO } from '../../../src/posts/routes/input-dto/update-post.input-dto';
+import { UpdatePostByIdInputDTO } from '../../../src/posts/routes/input-dto/update-post-by-id.input-dto';
 import { updatePostById } from '../../utils/posts/update-post-by-id.test-util';
 import { getUpdatePostInputDTO } from '../../utils/posts/get-update-post-input-dto.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
@@ -78,7 +78,7 @@ describe('Posts API', () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createdPostBlogId: string = createdPost.blogId;
-    const updatePostData: UpdatePostInputDTO = getUpdatePostInputDTO(createdPostBlogId);
+    const updatePostData: UpdatePostByIdInputDTO = getUpdatePostInputDTO(createdPostBlogId);
 
     await updatePostById(app, createdPostId, createdPostBlogId, updatePostData);
 

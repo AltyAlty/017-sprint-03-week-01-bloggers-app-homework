@@ -4,10 +4,10 @@ import { inputValidationResultMiddleware } from '../../core/middlewares/validati
 import { basicAuthGuardMiddleware } from '../../auth/middlewares/guard-middlewares/basic-auth.guard-middleware';
 import { idValidation } from '../../core/middlewares/validation/params-id-validation.middlewares';
 import { getUserListHandler } from './handlers/get-user-list.handler';
-import { UserSortFieldInputDTO } from './input-dto/user-sort-field.input-dto';
+import { UserSortFieldQueryInputDTO } from './input-dto/query/user-sort-field-query.input-dto';
 import { createUserHandler } from './handlers/create-user.handler';
 import { deleteUserByIdHandler } from './handlers/delete-user-by-id.handler';
-import { userCreateInputValidation } from '../validation/user-input-validation.middlewares';
+import { userCreateInputValidation } from '../validation/users-input-validation.middlewares';
 import { SETTINGS } from '../../core/settings/settings';
 
 /*Роутер из Express для работы с данными по пользователям.*/
@@ -19,8 +19,8 @@ usersRouter.use(basicAuthGuardMiddleware);
 usersRouter
   /*001. GET-запрос по получению пользователей с пагинацией, используя query-параметры.*/
   .get(
-    SETTINGS.GET_USERS_LIST_PATH,
-    paginationValidationMiddleware(UserSortFieldInputDTO),
+    SETTINGS.GET_USER_LIST_PATH,
+    paginationValidationMiddleware(UserSortFieldQueryInputDTO),
     inputValidationResultMiddleware,
     getUserListHandler
   )

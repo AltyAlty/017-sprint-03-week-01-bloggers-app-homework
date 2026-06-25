@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
-import { UpdateBlogInputDTO } from '../input-dto/update-blog.input-dto';
+import { UpdateBlogByIdInputDTO } from '../input-dto/update-blog-by-id.input-dto';
 import { blogsService } from '../../application/blogs.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { UpdateBlogByIdUriInputDTO } from '../input-dto/uri/update-blog-by-id-uri.input-dto';
 
-/*Функция-обработчик "updateBlogByIdHandler()" для PUT-запросов по изменению блога по ID, используя URI-параметры.*/
+/*Функция-обработчик для PUT-запросов по изменению блога по ID, используя URI-параметры.*/
 export const updateBlogByIdHandler = async (
-  req: Request<{ id: string }, {}, UpdateBlogInputDTO>,
+  req: Request<UpdateBlogByIdUriInputDTO, {}, UpdateBlogByIdInputDTO>,
   res: Response<void | ExtensionType[]>
 ) => {
   try {

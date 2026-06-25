@@ -5,10 +5,11 @@ import { postsQueryService } from '../../application/posts.query-service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PostOutputDTO } from '../output-dto/post.output-dto';
+import { GetPostByIdUriInputDTO } from '../input-dto/uri/get-post-by-id-uri.input-dto';
 
-/*Функция-обработчик "getPostByIdHandler()" для GET-запросов по получению поста по ID, используя URI-параметры.*/
+/*Функция-обработчик для GET-запросов по получению поста по ID, используя URI-параметры.*/
 export const getPostByIdHandler = async (
-  req: Request<{ id: string }>,
+  req: Request<GetPostByIdUriInputDTO>,
   res: Response<PostOutputDTO | ExtensionType[]>
 ) => {
   try {

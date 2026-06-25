@@ -5,11 +5,11 @@ import { commentsQueryService } from '../../application/comments.query-service';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { CommentOutputDTO } from '../output-dto/comment.output-dto';
+import { GetCommentByIdUriInputDTO } from '../input-dto/uri/get-comment-by-id-uri.input-dto';
 
-/*Функция-обработчик "getCommentByIdHandler()" для GET-запросов по получению комментария по ID,
-используя URI-параметры.*/
+/*Функция-обработчик для GET-запросов по получению комментария по ID, используя URI-параметры.*/
 export const getCommentByIdHandler = async (
-  req: Request<{ id: string }>,
+  req: Request<GetCommentByIdUriInputDTO>,
   res: Response<CommentOutputDTO | ExtensionType[]>
 ) => {
   try {

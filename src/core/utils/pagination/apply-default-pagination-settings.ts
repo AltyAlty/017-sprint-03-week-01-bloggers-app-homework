@@ -1,9 +1,9 @@
 import { defaultPaginationSettings } from '../../middlewares/validation/pagination-validation.middleware';
 import { DefaultPaginationSettingsType } from '../../types/pagination/default-pagination-settings.type';
 
-/*Функция "applyDefaultPaginationSettings()" на основе объекта с query-параметрами, прошедшими обработку через функцию
-"matchedData()", создает новый объект, который соответствует типу "defaultPaginationSettings". То есть эта функция
-добавляет дефолтные настройки пагинации.
+/*Функция для создания нового объекта, соответствующего типу "defaultPaginationSettings", на основе объекта с
+query-параметрами, прошедшими обработку через функцию "matchedData()". То есть эта функция для добавления дефолтных
+настроек пагинации.
 
 Касательно TS:
 1. "<P = string>": можно указать дженерик-параметр, если не указывать, то он будет равен string.

@@ -1,25 +1,25 @@
 import { Filter, ObjectId } from 'mongodb';
 import { UserType } from '../application/types/user.type';
 import { db } from '../../db/mongodb/mongo.db';
-import { GetUserListQueryInputDTO } from '../routes/input-dto/get-user-list-query.input-dto';
+import { GetUserListQueryInputDTO } from '../routes/input-dto/query/get-user-list-query.input-dto';
 import { SortDirection } from '../../core/types/pagination/sort-direction';
-import { UserSortFieldInputDTO } from '../routes/input-dto/user-sort-field.input-dto';
+import { UserSortFieldQueryInputDTO } from '../routes/input-dto/query/user-sort-field-query.input-dto';
 import { UserDBType } from './types/user-db.type';
 
-/*Query-репозиторий "usersQueryRepository" для работы с пользователями в БД.*/
+/*Query-репозиторий для работы с пользователями в БД.*/
 export const usersQueryRepository = {
-  /*Метод "findById()" для поиска пользователя по ID в БД.*/
-  async findById(userId: string): Promise<UserDBType | null> {
+  /*Метод для поиска пользователя по ID в БД.*/
+  async findById(id: string): Promise<UserDBType | null> {
     /*Просим коллекцию "usersCollection" найти пользователя по ID в БД.*/
-    const user: UserDBType | null = await db.usersCollection.findOne({ _id: new ObjectId(userId) });
+    const user: UserDBType | null = await db.usersCollection.findOne({ _id: new ObjectId(id) });
     /*Если пользователь не был найден, то возвращаем null.*/
     if (!user) return null;
     /*Если пользователь был найден, то возвращаем его.*/
     return user;
   },
 
-  /*Метод "findMany()" для поиска пользователей в БД.*/
-  async findMany(queryDTO: GetUserListQueryInputDTO): Promise<{ items: UserDBType[]; totalCount: number }> {
+  /*Метод для поиска пользователей в БД.*/
+  async findAll(queryDTO: GetUserListQueryInputDTO): Promise<{ items: UserDBType[]; totalCount: number }> {
     /*Создаем переменные на основе параметра "queryDTO" при помощи деструктуризации.*/
     const {
       pageNumber,
@@ -31,7 +31,7 @@ export const usersQueryRepository = {
     }: {
       pageNumber: number;
       pageSize: number;
-      sortBy: UserSortFieldInputDTO;
+      sortBy: UserSortFieldQueryInputDTO;
       sortDirection: SortDirection;
       searchLoginTerm?: string | undefined;
       searchEmailTerm?: string | undefined;

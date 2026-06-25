@@ -13,6 +13,8 @@ tags:
     description: API for managing posts
   - name: Comments
     description: API for managing comments
+  - name: SecurityDevices
+    description: API for managing security devices
   - name: Users
     description: API for managing users
   - name: Testing

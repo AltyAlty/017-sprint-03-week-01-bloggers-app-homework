@@ -5,3 +5,4 @@ dist
 .env
 */.env
 **/.env
+src/db/mongodb/data/

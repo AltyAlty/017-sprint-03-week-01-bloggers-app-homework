@@ -4,10 +4,13 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { usersService } from '../../application/users.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { DeleteUSerByIdUriInputDTO } from '../input-dto/uri/delete-user-by-id-uri.input-dto';
 
-/*Функция-обработчик "deleteUserByIdHandler()" для DELETE-запросов по удалению пользователя по ID, используя
-URI-параметры.*/
-export const deleteUserByIdHandler = async (req: Request<{ id: string }>, res: Response<void | ExtensionType[]>) => {
+/*Функция-обработчик для DELETE-запросов по удалению пользователя по ID, используя URI-параметры.*/
+export const deleteUserByIdHandler = async (
+  req: Request<DeleteUSerByIdUriInputDTO>,
+  res: Response<void | ExtensionType[]>
+) => {
   try {
     /*Получаем ID пользователя.*/
     const userId: string = req.params.id;

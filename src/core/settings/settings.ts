@@ -2,21 +2,21 @@ import { SortDirection } from '../types/pagination/sort-direction';
 
 export const SETTINGS = {
   PORT: process.env.PORT || 5003,
-  MONGO_URL: process.env.MONGO_URL || '',
+  MONGO_URL: process.env.MONGO_URL_LOCAL || '',
 
   BLOGS_PATH: '/api/blogs',
-  GET_BLOGS_LIST_PATH: '',
+  GET_BLOG_LIST_PATH: '',
   CREATE_BLOG_PATH: '',
-  GET_POSTS_LIST_BY_BLOG_ID_PATH: '/:blogId/posts',
-  CREATE_POST_IN_BLOG_PATH: '/:blogId/posts',
+  GET_POST_LIST_BY_BLOG_ID_PATH: '/:blogId/posts',
+  CREATE_POST_FOR_BLOG_PATH: '/:blogId/posts',
   GET_BLOG_BY_ID_PATH: '/:id',
   UPDATE_BLOG_BY_ID_PATH: '/:id',
   DELETE_BLOG_BY_ID_PATH: '/:id',
 
   POSTS_PATH: '/api/posts',
-  GET_COMMENTS_LIST_BY_POST_ID_PATH: '/:postId/comments',
-  CREATE_COMMENT_IN_POST_PATH: '/:postId/comments',
-  GET_POSTS_LIST_PATH: '',
+  GET_COMMENT_LIST_BY_POST_ID_PATH: '/:postId/comments',
+  CREATE_COMMENT_FOR_POST_PATH: '/:postId/comments',
+  GET_POST_LIST_PATH: '',
   CREATE_POST_PATH: '',
   GET_POST_BY_ID_PATH: '/:id',
   UPDATE_POST_BY_ID_PATH: '/:id',
@@ -28,7 +28,7 @@ export const SETTINGS = {
   GET_COMMENT_BY_ID_PATH: '/:id',
 
   USERS_PATH: '/api/users',
-  GET_USERS_LIST_PATH: '',
+  GET_USER_LIST_PATH: '',
   CREATE_USER_PATH: '',
   DELETE_USER_BY_ID_PATH: '/:id',
 
@@ -41,6 +41,11 @@ export const SETTINGS = {
   REFRESH_TOKEN_PATH: '/refresh-token',
   LOGOUT_PATH: '/logout',
 
+  SECURITY_DEVICES_PATH: '/api/security/devices',
+  GET_SECURITY_DEVICE_LIST_PATH: '',
+  REVOKE_SESSIONS_EXCEPT_CURRENT_DEVICE_PATH: '',
+  REVOKE_SESSION_BY_DEVICE_ID_PATH: '/:id',
+
   TESTING_PATH: '/api/testing',
   CLEAR_DB_PATH: '/all-data',
 
@@ -51,7 +56,9 @@ export const SETTINGS = {
   POSTS_COLLECTION_NAME: 'posts',
   COMMENTS_COLLECTION_NAME: 'comments',
   USERS_COLLECTION_NAME: 'users',
-  REFRESH_TOKENS_COLLECTION_NAME: 'refresh_tokens',
+  SESSIONS_COLLECTION_NAME: 'sessions',
+  SECURITY_DEVICES_COLLECTION_NAME: 'securityDevices',
+  REQUEST_RATE_LIMIT_LOGS_COLLECTION_NAME: 'requestRateLimitLogs',
 
   DEFAULT_PAGINATION_PAGE_NUMBER: 1,
   DEFAULT_PAGINATION_PAGE_SIZE: 10,
@@ -72,4 +79,8 @@ export const SETTINGS = {
   EMAIL_PASS: process.env.EMAIL_PASS,
   EMAIL_APP_PASS: process.env.EMAIL_APP_PASS,
   DEFAULT_CODE_EXPIRATION_TIME: { minutes: Number(process.env.DEFAULT_CODE_EXPIRATION_TIME) },
+
+  REQUEST_RATE_LIMIT: 5,
+  REQUEST_RATE_LIMIT_TIME_IN_SECONDS: 10,
+  REQUEST_RATE_LIMIT_LOG_EXPIRATION_TIME_IN_SECONDS: 120,
 };

@@ -1,18 +1,19 @@
 import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
-import { GetPostListInBlogQueryInputDTO } from '../../../posts/routes/input-dto/get-post-list-in-blog-query.input-dto';
+import { GetPostListByBlogIdQueryInputDTO } from '../../../posts/routes/input-dto/query/get-post-list-by-blog-id-query.input-dto';
 import { postsQueryService } from '../../../posts/application/posts.query-service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PaginatedPostListOutputDTO } from '../../../posts/routes/output-dto/paginated-post-list.output-dto';
 import { getSanitizedQueryInputWithDefaultPaginationSettings } from '../../../core/utils/pagination/get-sanitized-query-input-with-default-pagination-settings';
-import { PostSortFieldInputDTO } from '../../../posts/routes/input-dto/post-sort-field.input-dto';
+import { PostSortFieldQueryInputDTO } from '../../../posts/routes/input-dto/query/post-sort-field-query.input-dto';
+import { GetPostListByBlogIdUriInputDTO } from '../../../posts/routes/input-dto/uri/get-post-list-by-blog-id-uri.input-dto';
 
-/*Функция-обработчик "getPostListByBlogIdHandler()" для GET-запросов по получению постов с пагинацией в блоге по ID,
-используя URI-параметры.*/
+/*Функция-обработчик для GET-запросов по получению постов с пагинацией в блоге по ID, используя URI-параметры и
+query-параметры.*/
 export const getPostListByBlogIdHandler = async (
-  req: Request<{ blogId: string }, {}, {}, GetPostListInBlogQueryInputDTO>,
+  req: Request<GetPostListByBlogIdUriInputDTO, {}, {}, GetPostListByBlogIdQueryInputDTO>,
   res: Response<PaginatedPostListOutputDTO | ExtensionType[]>
 ) => {
   try {
@@ -21,13 +22,13 @@ export const getPostListByBlogIdHandler = async (
 
     /*Санитизируем query-параметры и добавляем к ним дефолтные настройки пагинации.*/
     const sanitizedQueryInputWithDefaultPaginationSettings = getSanitizedQueryInputWithDefaultPaginationSettings<
-      GetPostListInBlogQueryInputDTO,
-      PostSortFieldInputDTO
+      GetPostListByBlogIdQueryInputDTO,
+      PostSortFieldQueryInputDTO
     >(req);
 
     /*Просим query-сервис "postsQueryService" найти посты в блоге по ID.*/
     const paginatedPostListResult: Result<{ paginatedPostListOutput: PaginatedPostListOutputDTO } | null> =
-      await postsQueryService.findMany(sanitizedQueryInputWithDefaultPaginationSettings, blogId);
+      await postsQueryService.findAll(sanitizedQueryInputWithDefaultPaginationSettings, blogId);
 
     /*Получаем HTTP-статус операции по поиску постов в блоге по ID.*/
     const paginatedPostListResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(paginatedPostListResult.status);

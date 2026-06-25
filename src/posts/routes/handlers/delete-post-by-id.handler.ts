@@ -4,9 +4,13 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { postsService } from '../../application/posts.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
+import { DeletePostByIdUriInputDTO } from '../input-dto/uri/delete-post-by-id-uri.input-dto';
 
-/*Функция-обработчик "deletePostByIdHandler()" для DELETE-запросов по удалению поста по ID, используя URI-параметры.*/
-export const deletePostByIdHandler = async (req: Request<{ id: string }>, res: Response<void | ExtensionType[]>) => {
+/*Функция-обработчик для DELETE-запросов по удалению поста по ID, используя URI-параметры.*/
+export const deletePostByIdHandler = async (
+  req: Request<DeletePostByIdUriInputDTO>,
+  res: Response<void | ExtensionType[]>
+) => {
   try {
     /*Получаем ID поста.*/
     const postId: string = req.params.id;

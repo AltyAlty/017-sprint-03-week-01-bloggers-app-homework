@@ -10,6 +10,8 @@ declare global {
     export interface Request {
       /*Добавляем в интерфейс "Request" новое свойство "userId".*/
       userId: IdType | undefined;
+      /*Добавляем в интерфейс "Request" новое свойство "deviceId".*/
+      deviceId: IdType | undefined;
     }
   }
 }

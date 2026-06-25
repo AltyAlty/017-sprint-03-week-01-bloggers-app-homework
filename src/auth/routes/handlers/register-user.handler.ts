@@ -6,7 +6,7 @@ import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 
-/*Функция-обработчик "registerUserHandler()" для POST-запросов по регистрации пользователя.*/
+/*Функция-обработчик для POST-запросов по регистрации пользователя.*/
 export const registerUserHandler = async (
   req: Request<{}, {}, CreateUserInputDTO>,
   res: Response<void | ExtensionType[]>

@@ -7,7 +7,7 @@ import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/commen
 import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
 import { getCommentById } from '../../utils/comments/get-comment-by-id.test-util';
 import { updateCommentById } from '../../utils/comments/update-comment-by-id.test-util';
-import { UpdateCommentInputDTO } from '../../../src/comments/routes/input-dto/update-comment.input-dto';
+import { UpdateCommentByIdInputDTO } from '../../../src/comments/routes/input-dto/update-comment-by-id.input-dto';
 import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
@@ -41,7 +41,7 @@ describe('Comments API', () => {
   it('✅ 002 should update a comment by ID; PUT /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
-    const updateCommentData: UpdateCommentInputDTO = getUpdateCommentInputDTO();
+    const updateCommentData: UpdateCommentByIdInputDTO = getUpdateCommentInputDTO();
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
     await createUser(app, createUserData);
 

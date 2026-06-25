@@ -4,7 +4,7 @@ import { IdType } from '../../../core/types/id.type';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { SETTINGS } from '../../../core/settings/settings';
 
-/*Middleware "accessTokenGuardMiddleware" отвечает за проверку AT в запросах.*/
+/*Middleware для проверки AT в запросах.*/
 export const accessTokenGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   /*Если в заголовках запроса нет заголовка "authorization", то сообщаем об отказе в аутентификации клиенту.*/
   if (!req.headers.authorization) return res.sendStatus(HttpStatuses.Unauthorized_401);
@@ -13,7 +13,7 @@ export const accessTokenGuardMiddleware = async (req: Request, res: Response, ne
   /*Если тип авторизации не "Bearer", то сообщаем об отказе в аутентификации клиенту.*/
   if (authType !== 'Bearer') return res.sendStatus(HttpStatuses.Unauthorized_401);
   /*Если тип авторизации "Bearer", то просим адаптер "jwtAdapter" верифицировать токен.*/
-  const payload: { userId: string } | null = await jwtAdapter.verifyToken(token, SETTINGS.AT_SECRET!);
+  const payload: { userId: string } | null = await jwtAdapter.verifyAccessToken(token, SETTINGS.AT_SECRET!);
 
   /*Если верификация токена прошла успешно, то извлекаем ID пользователя и прикрепляем его к запросу. После чего
   разрешаем дальнейшее выполнение запроса при помощи функции "next()".*/

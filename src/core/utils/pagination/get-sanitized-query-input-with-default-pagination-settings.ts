@@ -3,9 +3,9 @@ import { matchedData } from 'express-validator';
 import { applyDefaultPaginationSettings } from './apply-default-pagination-settings';
 import { DefaultPaginationSettingsType } from '../../types/pagination/default-pagination-settings.type';
 
-/*Функция "getSanitizedQueryInputWithDefaultPaginationSettings()" извлекает и санитизирует query-параметры при помощи
-функции "matchedData()" из библиотеки express-validator, после чего применяет к ним дефолтные настройки пагинации,
-возвращая полностью заполненный объект типа "DefaultPaginationSettingsType<P>".
+/*Функция для извлечения и санитизации query-параметров при помощи функции "matchedData()" из библиотеки
+express-validator, применения к ним дефолтных настроек пагинации и возвращения полностью заполненного объекта типа
+"DefaultPaginationSettingsType<P>".
 
 Касательно ТС:
 1. Дженерик T уточняет изначальные query-параметры.

@@ -3,7 +3,7 @@ import { idValidation } from '../../core/middlewares/validation/params-id-valida
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validation-result.middleware';
 import { getCommentByIdHandler } from './handlers/get-comment-by-id.handler';
 import { accessTokenGuardMiddleware } from '../../auth/middlewares/guard-middlewares/access-token.guard-middleware';
-import { commentUpdateInputValidation } from '../validation/comment-input-validation.middlewares';
+import { commentUpdateInputValidation } from '../validation/comments-input-validation.middlewares';
 import { updateCommentByIdHandler } from './handlers/update-comment-by-id.handler';
 import { deleteCommentByIdHandler } from './handlers/delete-comment-by-id.handler';
 import { SETTINGS } from '../../core/settings/settings';

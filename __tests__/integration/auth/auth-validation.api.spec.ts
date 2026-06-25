@@ -135,7 +135,11 @@ describe('Auth API validation', () => {
       loginUserData
     );
 
-    const randomRefreshTokenNotInDB: string = await jwtAdapter.createToken('1', SETTINGS.RT_SECRET!, SETTINGS.RT_TIME!);
+    const randomRefreshTokenNotInDB: string = await jwtAdapter.createAccessToken(
+      '1',
+      SETTINGS.RT_SECRET!,
+      SETTINGS.RT_TIME!
+    );
     const testStatus: HttpStatuses = HttpStatuses.Unauthorized_401;
 
     await refreshAccessAndRefreshTokens(app, undefined, undefined, testStatus);
@@ -195,7 +199,11 @@ describe('Auth API validation', () => {
       loginUserData
     );
 
-    const randomRefreshTokenNotInDB: string = await jwtAdapter.createToken('1', SETTINGS.RT_SECRET!, SETTINGS.RT_TIME!);
+    const randomRefreshTokenNotInDB: string = await jwtAdapter.createAccessToken(
+      '1',
+      SETTINGS.RT_SECRET!,
+      SETTINGS.RT_TIME!
+    );
     const testStatus: HttpStatuses = HttpStatuses.Unauthorized_401;
 
     await revokeRefreshToken(app, undefined, undefined, testStatus);

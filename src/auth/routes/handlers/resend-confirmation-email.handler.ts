@@ -4,11 +4,11 @@ import { authService } from '../../application/auth.service';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 import { errorsHandler } from '../../../core/errors/errors.handler';
+import { ResendConfirmationEmailInputDTO } from '../input-dto/resend-confirmation-email.input-dto';
 
-/*Функция-обработчик "repeatUserRegistrationHandler()" для POST-запросов по повторной отправке письма для подтверждения
-регистрация пользователя.*/
+/*Функция-обработчик для POST-запросов по повторной отправке письма для подтверждения регистрация пользователя.*/
 export const resendConfirmationEmailHandler = async (
-  req: Request<{}, {}, { email: string }>,
+  req: Request<{}, {}, ResendConfirmationEmailInputDTO>,
   res: Response<void | ExtensionType[]>
 ) => {
   try {
@@ -22,13 +22,14 @@ export const resendConfirmationEmailHandler = async (
       resendConfirmationEmailResult.status
     );
 
-    /*Если повторно отправить письмо для подтверждения регистрация пользователя не удалось, то сообщаем об этом
+    /*Если повторная отправка письма для подтверждения регистрация пользователя не прошла успешно, то сообщаем об этом
     клиенту.*/
     if (resendConfirmationEmailResultHttpStatus !== HttpStatuses.NoContent_204) {
       return res.status(resendConfirmationEmailResultHttpStatus).send(resendConfirmationEmailResult.extensions);
     }
 
-    /*Если повторно отправить письмо для подтверждения регистрация пользователя удалось, то сообщаем об этом клиенту.*/
+    /*Если повторная отправка письма для подтверждения регистрация пользователя прошла успешно, то сообщаем об этом
+    клиенту.*/
     res.sendStatus(resendConfirmationEmailResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/

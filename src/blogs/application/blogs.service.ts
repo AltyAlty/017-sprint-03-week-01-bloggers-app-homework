@@ -1,7 +1,7 @@
 import { blogsRepository } from '../repositories/blogs.repository';
 import { BlogType } from './types/blog.type';
 import { CreateBlogInputDTO } from '../routes/input-dto/create-blog.input-dto';
-import { UpdateBlogInputDTO } from '../routes/input-dto/update-blog.input-dto';
+import { UpdateBlogByIdInputDTO } from '../routes/input-dto/update-blog-by-id.input-dto';
 import { postsService } from '../../posts/application/posts.service';
 import { ResultStatuses } from '../../core/types/result/result-statuses';
 import { Result } from '../../core/types/result/result.type';
@@ -9,10 +9,10 @@ import { BlogOutputDTO } from '../routes/output-dto/blog.output-dto';
 import { mapToBlogOutputDTO } from '../repositories/mappers/map-to-blog-output-dto.util';
 import { BlogDBType } from '../repositories/types/blog-db.type';
 
-/*Сервис "blogsService" для работы с блогами.*/
+/*Сервис для работы с блогами.*/
 export const blogsService = {
-  /*Метод "create()" для добавления блога.*/
-  async create(dto: CreateBlogInputDTO): Promise<Result<{ blogId: string }>> {
+  /*Метод для добавления блога.*/
+  async create(dto: CreateBlogInputDTO): Promise<Result<{ createdBlogId: string }>> {
     /*Создаем объект с данными нового блога.*/
     const newBlog: BlogType = {
       name: dto.name,
@@ -23,20 +23,20 @@ export const blogsService = {
     };
 
     /*Просим репозиторий "blogsRepository" создать блог в БД.*/
-    const blogId: string = await blogsRepository.create(newBlog);
+    const createdBlogId: string = await blogsRepository.create(newBlog);
 
     /*Возвращаем ResultObject c ID созданного блога.*/
     return {
       status: ResultStatuses.Created,
-      data: { blogId },
+      data: { createdBlogId },
       extensions: [],
     };
   },
 
-  /*Метод "findById()" для поиска блога по ID.*/
-  async findById(blogId: string): Promise<Result<{ blogOutput: BlogOutputDTO } | null>> {
+  /*Метод для поиска блога по ID.*/
+  async findById(id: string): Promise<Result<{ blogOutput: BlogOutputDTO } | null>> {
     /*Просим репозиторий "blogsRepository" найти блог по ID в БД.*/
-    const blogDB: BlogDBType | null = await blogsRepository.findById(blogId);
+    const blogDB: BlogDBType | null = await blogsRepository.findById(id);
 
     /*Если блог не был найден, то возвращаем ResultObject с информацией об этом.*/
     if (!blogDB) {
@@ -44,7 +44,7 @@ export const blogsService = {
         status: ResultStatuses.NotFound,
         data: null,
         errorMessage: 'Not Found',
-        extensions: [{ field: 'blogId', message: 'Not Found' }],
+        extensions: [{ field: 'id', message: 'Blog not found' }],
       };
     }
 
@@ -59,10 +59,10 @@ export const blogsService = {
     };
   },
 
-  /*Метод "updateById()" для изменения блога по ID.*/
-  async updateById(blogId: string, dto: UpdateBlogInputDTO): Promise<Result<{} | null>> {
+  /*Метод для изменения блога по ID.*/
+  async updateById(id: string, dto: UpdateBlogByIdInputDTO): Promise<Result<{} | null>> {
     /*Просим репозиторий "blogsRepository" изменить блог по ID в БД.*/
-    const updatedBlogCount: number = await blogsRepository.updateById(blogId, dto);
+    const updatedBlogCount: number = await blogsRepository.updateById(id, dto);
 
     /*Если блог не был изменен, то возвращаем ResultObject с информацией об этом.*/
     if (updatedBlogCount < 1) {
@@ -70,7 +70,7 @@ export const blogsService = {
         status: ResultStatuses.NotFound,
         data: null,
         errorMessage: 'Not Found',
-        extensions: [{ field: 'blogId', message: 'Not Found' }],
+        extensions: [{ field: 'id', message: 'Blog not found' }],
       };
     }
 
@@ -82,10 +82,10 @@ export const blogsService = {
     };
   },
 
-  /*Метод "deleteById()" для удаления блога по ID.*/
-  async deleteById(blogId: string): Promise<Result<{} | null>> {
+  /*Метод для удаления блога по ID.*/
+  async deleteById(id: string): Promise<Result<{} | null>> {
     /*Просим репозиторий "blogsRepository" найти блог по ID в БД.*/
-    const blogDB: BlogDBType | null = await blogsRepository.findById(blogId);
+    const blogDB: BlogDBType | null = await blogsRepository.findById(id);
 
     /*Если блог не был найден, то возвращаем ResultObject с информацией об этом.*/
     if (!blogDB) {
@@ -93,14 +93,14 @@ export const blogsService = {
         status: ResultStatuses.NotFound,
         data: null,
         errorMessage: 'Not Found',
-        extensions: [{ field: 'blogId', message: 'Not Found' }],
+        extensions: [{ field: 'id', message: 'Blog not found' }],
       };
     }
 
     /*Если блог был найден, то просим сервис "postsService" удалить посты в блоге по ID.*/
-    await postsService.deleteManyByBlogId(blogId);
+    await postsService.deleteAllByBlogId(id);
     /*Просим репозиторий "blogsRepository" удалить блог по ID в БД.*/
-    await blogsRepository.deleteById(blogId);
+    await blogsRepository.deleteById(id);
 
     /*Возвращаем ResultObject c информацией об удалении блога.*/
     return {

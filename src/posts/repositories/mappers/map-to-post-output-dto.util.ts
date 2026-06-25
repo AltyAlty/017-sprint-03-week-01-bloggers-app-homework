@@ -1,7 +1,7 @@
 import { PostOutputDTO } from '../../routes/output-dto/post.output-dto';
 import { PostDBType } from '../types/post-db.type';
 
-/*Функция "mapToPostOutputDTO()" преобразовывает пост из БД в подготовленный для отправки клиенту пост.*/
+/*Функция для преобразования поста из БД в подготовленный для отправки клиенту пост.*/
 export const mapToPostOutputDTO = (post: PostDBType): PostOutputDTO => {
   return {
     id: post._id.toString(),

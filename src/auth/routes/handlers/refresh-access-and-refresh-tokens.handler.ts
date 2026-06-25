@@ -7,7 +7,7 @@ import { HttpStatuses } from '../../../core/types/http-statuses';
 import { authService } from '../../application/auth.service';
 import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
 
-/*Функция-обработчик "refreshAccessAndRefreshTokensHandler()" для POST-запросов по получению новой пары AT/RT.*/
+/*Функция-обработчик для POST-запросов по получению новой пары AT/RT.*/
 export const refreshAccessAndRefreshTokensHandler = async (
   req: Request<{}, {}, {}, {}, IdType>,
   res: Response<RefreshAccessAndRefreshTokensOutputDTO | ExtensionType[]>
@@ -15,14 +15,22 @@ export const refreshAccessAndRefreshTokensHandler = async (
   try {
     /*Получаем ID пользователя.*/
     const userId: string = req.userId?.id as string;
-    /*Если ID пользователя получить не удалось, то сообщаем клиенту об отказе в аутентификации.*/
+    /*Если ID пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
     if (!userId) return res.sendStatus(HttpStatuses.Unauthorized_401);
+    /*Получаем ID устройства пользователя из сессии.*/
+    const deviceId: string = req.deviceId?.id as string;
+    /*Если ID устройства пользователя из сессии не был найден, то сообщаем об отказе в аутентификации клиенту.*/
+    if (!deviceId) return res.sendStatus(HttpStatuses.Unauthorized_401);
+    /*Получаем IP-адресс пользователя.*/
+    const ip: string = req.ip || req.socket.remoteAddress || '0.0.0.0';
     /*Получаем текущий RT.*/
     const currentRefreshToken: string = req.cookies.refreshToken;
+    /*Если текущий RT не был найден, то сообщаем об отказе в аутентификации клиенту.*/
+    if (!currentRefreshToken) return res.sendStatus(HttpStatuses.Unauthorized_401);
 
     /*Просим сервис "authService" перевыпустить пару AT/RT.*/
     const createAccessAndRefreshTokensResult: Result<{ accessToken: string; refreshToken: string } | null> =
-      await authService.createAccessAndRefreshTokens(currentRefreshToken, userId);
+      await authService.refreshAccessAndRefreshTokens(userId, deviceId, ip, currentRefreshToken);
 
     /*Получаем HTTP-статус операции по перевыпуску пары AT/RT.*/
     const createAccessAndRefreshTokensResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(

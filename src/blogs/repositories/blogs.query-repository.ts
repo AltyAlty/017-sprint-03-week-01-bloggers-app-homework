@@ -1,25 +1,25 @@
-import { GetBlogListQueryInputDTO } from '../routes/input-dto/get-blog-list-query.input-dto';
+import { GetBlogListQueryInputDTO } from '../routes/input-dto/query/get-blog-list-query.input-dto';
 import { Filter, ObjectId } from 'mongodb';
 import { BlogType } from '../application/types/blog.type';
 import { db } from '../../db/mongodb/mongo.db';
-import { BlogSortFieldInputDTO } from '../routes/input-dto/blog-sort-field.input-dto';
+import { BlogSortFieldQueryInputDTO } from '../routes/input-dto/query/blog-sort-field-query.input-dto';
 import { SortDirection } from '../../core/types/pagination/sort-direction';
 import { BlogDBType } from './types/blog-db.type';
 
-/*Query-репозиторий "blogsQueryRepository" для работы с блогами в БД.*/
+/*Query-репозиторий для работы с блогами в БД.*/
 export const blogsQueryRepository = {
-  /*Метод "findById()" для поиска блога по ID в БД.*/
-  async findById(blogId: string): Promise<BlogDBType | null> {
+  /*Метод для поиска блога по ID в БД.*/
+  async findById(id: string): Promise<BlogDBType | null> {
     /*Просим коллекцию "blogsCollection" найти блог по ID в БД.*/
-    const blog: BlogDBType | null = await db.blogsCollection.findOne({ _id: new ObjectId(blogId) });
+    const blog: BlogDBType | null = await db.blogsCollection.findOne({ _id: new ObjectId(id) });
     /*Если блог не был найден, то возвращаем null.*/
     if (!blog) return null;
     /*Если блог был найден, то возвращаем его.*/
     return blog;
   },
 
-  /*Метод "findMany()" для поиска блогов в БД.*/
-  async findMany(queryDTO: GetBlogListQueryInputDTO): Promise<{ items: BlogDBType[]; totalCount: number }> {
+  /*Метод для поиска блогов в БД.*/
+  async findAll(queryDTO: GetBlogListQueryInputDTO): Promise<{ items: BlogDBType[]; totalCount: number }> {
     /*Создаем переменные на основе параметра "queryDTO" при помощи деструктуризации.*/
     const {
       pageNumber,
@@ -30,7 +30,7 @@ export const blogsQueryRepository = {
     }: {
       pageNumber: number;
       pageSize: number;
-      sortBy: BlogSortFieldInputDTO;
+      sortBy: BlogSortFieldQueryInputDTO;
       sortDirection: SortDirection;
       searchNameTerm?: string | undefined;
     } = queryDTO;

@@ -9,13 +9,17 @@ import { usersRouter } from './users/routes/users.router';
 import { authRouter } from './auth/routes/auth.router';
 import { commentsRouter } from './comments/routes/comments.router';
 import cookieParser from 'cookie-parser';
+import { securityDevicesRouter } from './security-devices/routes/security-devices.router';
 
-/*Функция "setupApp()" для конфигурирования экземпляров приложения Express.*/
+/*Функция для конфигурирования экземпляров приложения Express.*/
 export const setupApp = async (app: Express) => {
   /*Подключаем middleware для парсинга JSON в теле запроса.*/
   app.use(express.json());
   /*Подключаем middleware для работы с cookies.*/
   app.use(cookieParser());
+  /*Просим Express.js доверять заголовкам от прокси, чтобы правильно определять реальный IP пользователя и протокол
+  вместо того, чтобы видеть IP самого прокси-сервера.*/
+  app.set('trust proxy', true);
   /*GET-запрос по получению главной страницы.*/
   app.get('/', (req: Request, res: Response) => res.status(HttpStatuses.Ok_200).send('Hello World!'));
   /*Подключаем роутеры.*/
@@ -24,6 +28,7 @@ export const setupApp = async (app: Express) => {
   app.use(SETTINGS.COMMENTS_PATH, commentsRouter);
   app.use(SETTINGS.USERS_PATH, usersRouter);
   app.use(SETTINGS.AUTH_PATH, authRouter);
+  app.use(SETTINGS.SECURITY_DEVICES_PATH, securityDevicesRouter);
   app.use(SETTINGS.TESTING_PATH, testingRouter);
   /*Инициализируем документацию Swagger.*/
   setupSwagger(app);

@@ -15,5 +15,5 @@ const swaggerOptions = {
 
 /*Генерируем документацию API в формате Swagger.*/
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-/*Функция "setupSwagger()" для инициализации документации Swagger.*/
+/*Функция для инициализации документации Swagger.*/
 export const setupSwagger = (app: Express) => app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

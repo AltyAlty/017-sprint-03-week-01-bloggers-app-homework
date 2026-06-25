@@ -1,6 +1,6 @@
-import { CreateCommentInPostInputDTO } from '../../../src/comments/routes/input-dto/create-comment-in-post.input-dto';
+import { CreateCommentForPostInputDTO } from '../../../src/comments/routes/input-dto/create-comment-for-post.input-dto';
 
-export const getCreateCommentInPostInputDTO = (): CreateCommentInPostInputDTO => {
+export const getCreateCommentInPostInputDTO = (): CreateCommentForPostInputDTO => {
   return {
     content: 'some comment content 001',
   };

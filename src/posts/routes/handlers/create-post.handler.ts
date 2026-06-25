@@ -8,20 +8,20 @@ import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PostOutputDTO } from '../output-dto/post.output-dto';
 
-/*Функция-обработчик "createPostHandler()" для POST-запросов по добавлению поста.*/
+/*Функция-обработчик для POST-запросов по добавлению поста.*/
 export const createPostHandler = async (
   req: Request<{}, {}, CreatePostInputDTO>,
   res: Response<PostOutputDTO | ExtensionType[]>
 ) => {
   try {
     /*Просим сервис "postsService" создать пост.*/
-    const createdPostResult: Result<{ postId: string } | null> = await postsService.create(req.body);
+    const createdPostResult: Result<{ createdPostId: string } | null> = await postsService.create(req.body);
     /*Получаем HTTP-статус операции по созданию поста.*/
     const createdPostResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(createdPostResult.status);
 
     /*Просим query-сервис "postsQueryService" найти созданный пост по ID.*/
     const postResult: Result<{ postOutput: PostOutputDTO } | null> = await postsQueryService.findById(
-      createdPostResult.data!.postId
+      createdPostResult.data!.createdPostId
     );
 
     /*Получаем HTTP-статус операции по поиску созданного поста по ID.*/

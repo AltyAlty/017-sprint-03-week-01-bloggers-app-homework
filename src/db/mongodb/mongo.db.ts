@@ -4,7 +4,9 @@ import { BlogType } from '../../blogs/application/types/blog.type';
 import { PostType } from '../../posts/application/types/post.type';
 import { UserType } from '../../users/application/types/user.type';
 import { CommentType } from '../../comments/application/types/comment.type';
-import { RefreshTokenType } from '../../auth/application/types/refresh-token.type';
+import { SessionType } from '../../auth/application/types/session.type';
+import { SecurityDeviceType } from '../../security-devices/application/types/security-device.type';
+import { RequestRateLimitLogType } from '../../auth/application/types/request-rate-limit-log.type';
 
 /*Объект для работы с MongoDB.*/
 export const db = {
@@ -19,10 +21,12 @@ export const db = {
   postsCollection: {} as Collection<PostType>,
   commentsCollection: {} as Collection<CommentType>,
   usersCollection: {} as Collection<UserType>,
-  refreshTokensCollection: {} as Collection<RefreshTokenType>,
+  sessionsCollection: {} as Collection<SessionType>,
+  securityDevicesCollection: {} as Collection<SecurityDeviceType>,
+  requestRateLimitLogsCollection: {} as Collection<RequestRateLimitLogType>,
 
-  /*Метод "runDB()" для подключения к серверу MongoDB.*/
-  async runDb(url: string, dbName: string) {
+  /*Метод для подключения к серверу MongoDB.*/
+  async runDB(url: string, dbName: string) {
     try {
       /*Создаем клиент для MongoDB.*/
       this.client = new MongoClient(url);
@@ -33,9 +37,25 @@ export const db = {
       this.postsCollection = this.db.collection<PostType>(SETTINGS.POSTS_COLLECTION_NAME);
       this.commentsCollection = this.db.collection<CommentType>(SETTINGS.COMMENTS_COLLECTION_NAME);
       this.usersCollection = this.db.collection<UserType>(SETTINGS.USERS_COLLECTION_NAME);
-      this.refreshTokensCollection = this.db.collection<RefreshTokenType>(SETTINGS.REFRESH_TOKENS_COLLECTION_NAME);
-      /*Добавляем TTL в размере 7 дней для RT в БД.*/
-      await this.refreshTokensCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: SETTINGS.RT_TTL });
+      this.sessionsCollection = this.db.collection<SessionType>(SETTINGS.SESSIONS_COLLECTION_NAME);
+      await this.sessionsCollection.createIndex({ exp: 1 }, { expireAfterSeconds: 0 });
+
+      this.securityDevicesCollection = this.db.collection<SecurityDeviceType>(
+        SETTINGS.SECURITY_DEVICES_COLLECTION_NAME
+      );
+
+      this.requestRateLimitLogsCollection = this.db.collection<RequestRateLimitLogType>(
+        SETTINGS.REQUEST_RATE_LIMIT_LOGS_COLLECTION_NAME
+      );
+
+      await this.requestRateLimitLogsCollection.createIndex(
+        { timestamp: 1 },
+        { expireAfterSeconds: SETTINGS.REQUEST_RATE_LIMIT_LOG_EXPIRATION_TIME_IN_SECONDS }
+      );
+
+      /*Используем составной индекс, чтобы ускорить работу метода "countDocuments()".*/
+      await this.requestRateLimitLogsCollection.createIndex({ ip: 1, url: 1, timestamp: -1 });
+
       /*Присоединяем клиента для MongoDB к серверу и проверяем соединение.*/
       await this.client.connect();
       await this.db.command({ ping: 1 });
@@ -46,15 +66,15 @@ export const db = {
     }
   },
 
-  /*Метод "stopDb()" для отключения от сервера MongoDB.*/
-  async stopDb() {
+  /*Метод для отключения от сервера MongoDB.*/
+  async stopDB() {
     if (!this.client) throw new Error(`❌ No MongoDB clients`);
     await this.client.close();
     console.log('✅ Connection successfully closed');
   },
 
-  /*Метод "dropDb()" для очистки коллекций в БД.*/
-  async dropDb() {
+  /*Метод для очистки коллекций в БД.*/
+  async dropDB() {
     try {
       /*Очищаем коллекции.*/
       await Promise.all([
@@ -62,11 +82,13 @@ export const db = {
         this.postsCollection.deleteMany(),
         this.commentsCollection.deleteMany(),
         this.usersCollection.deleteMany(),
-        this.refreshTokensCollection.deleteMany(),
+        this.sessionsCollection.deleteMany(),
+        this.securityDevicesCollection.deleteMany(),
+        this.requestRateLimitLogsCollection.deleteMany(),
       ]);
     } catch (error: unknown) {
       console.error(`❌ Error while dropping DB: ${error}`);
-      await this.stopDb();
+      await this.stopDB();
     }
   },
 };

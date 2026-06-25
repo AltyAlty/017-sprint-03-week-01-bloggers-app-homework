@@ -1,4 +1,4 @@
-import { GetBlogListQueryInputDTO } from '../routes/input-dto/get-blog-list-query.input-dto';
+import { GetBlogListQueryInputDTO } from '../routes/input-dto/query/get-blog-list-query.input-dto';
 import { blogsQueryRepository } from '../repositories/blogs.query-repository';
 import { mapToPaginatedBlogListOutputDTO } from '../repositories/mappers/map-to-paginated-blog-list-output-dto.util';
 import { PaginatedBlogListOutputDTO } from '../routes/output-dto/paginated-blog-list.output-dto';
@@ -8,12 +8,12 @@ import { ResultStatuses } from '../../core/types/result/result-statuses';
 import { Result } from '../../core/types/result/result.type';
 import { BlogDBType } from '../repositories/types/blog-db.type';
 
-/*Query-сервис "blogsQueryService" для работы с блогами.*/
+/*Query-сервис для работы с блогами.*/
 export const blogsQueryService = {
-  /*Метод "findById()" для поиска блога по ID.*/
-  async findById(blogId: string): Promise<Result<{ blogOutput: BlogOutputDTO } | null>> {
+  /*Метод для поиска блога по ID.*/
+  async findById(id: string): Promise<Result<{ blogOutput: BlogOutputDTO } | null>> {
     /*Просим query-репозиторий "blogsQueryRepository" найти блог по ID в БД.*/
-    const blogDB: BlogDBType | null = await blogsQueryRepository.findById(blogId);
+    const blogDB: BlogDBType | null = await blogsQueryRepository.findById(id);
 
     /*Если блог не был найден, то возвращаем ResultObject с информацией об этом.*/
     if (!blogDB) {
@@ -21,7 +21,7 @@ export const blogsQueryService = {
         status: ResultStatuses.NotFound,
         data: null,
         errorMessage: 'Not Found',
-        extensions: [{ field: 'blogId', message: 'Not Found' }],
+        extensions: [{ field: 'id', message: 'Blog not found' }],
       };
     }
 
@@ -36,13 +36,13 @@ export const blogsQueryService = {
     };
   },
 
-  /*Метод "findMany()" для поиска блогов.*/
-  async findMany(
+  /*Метод для поиска блогов.*/
+  async findAll(
     queryDTO: GetBlogListQueryInputDTO
   ): Promise<Result<{ paginatedBlogListOutput: PaginatedBlogListOutputDTO }>> {
     /*Просим query-репозиторий "blogsQueryRepository" найти блоги в БД.*/
     const { items, totalCount }: { items: BlogDBType[]; totalCount: number } =
-      await blogsQueryRepository.findMany(queryDTO);
+      await blogsQueryRepository.findAll(queryDTO);
 
     /*Преобразовываем блоги из БД в подготовленные для пагинации блоги.*/
     const paginatedBlogListOutput: PaginatedBlogListOutputDTO = mapToPaginatedBlogListOutputDTO(items, {

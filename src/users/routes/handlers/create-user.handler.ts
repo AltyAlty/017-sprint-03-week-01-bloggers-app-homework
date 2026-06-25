@@ -8,20 +8,20 @@ import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UserOutputDTO } from '../output-dto/user.output-dto';
 
-/*Функция-обработчик "createUserHandler()" для POST-запросов по добавлению пользователя.*/
+/*Функция-обработчик для POST-запросов по добавлению пользователя.*/
 export const createUserHandler = async (
   req: Request<{}, {}, CreateUserInputDTO>,
   res: Response<UserOutputDTO | ExtensionType[]>
 ) => {
   try {
     /*Просим сервис "usersService" создать пользователя.*/
-    const createdUserResult: Result<{ userId: string }> = await usersService.create(req.body);
+    const createdUserResult: Result<{ createdUserId: string }> = await usersService.create(req.body);
     /*Получаем HTTP-статус операции по созданию пользователя.*/
     const createdUserResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(createdUserResult.status);
 
     /*Просим query-сервис "usersQueryService" найти созданного пользователя по ID.*/
     const userResult: Result<{ userOutput: UserOutputDTO } | null> = await usersQueryService.findById(
-      createdUserResult.data.userId
+      createdUserResult.data.createdUserId
     );
 
     /*Получаем HTTP-статус операции по поиску созданного пользователя по ID.*/

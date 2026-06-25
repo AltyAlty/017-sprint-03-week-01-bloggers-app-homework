@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { SETTINGS } from '../../../core/settings/settings';
 
-/*Middleware "basicAuthGuardMiddleware" отвечает за базовую авторизацию в приложении.*/
+/*Middleware для базовой авторизации в приложении.*/
 export const basicAuthGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
   /*Получаем заголовок "Authorization" из запроса. Должно быть вида "Basic <base64-encoded-credentials>".*/
   const auth: string = req.headers['authorization'] as string;
 
-  /*Если получить заголовок "Authorization" не удалось, то сообщаем об отказе в авторизации клиенту.*/
+  /*Если заголовок "Authorization" не был найден, то сообщаем об отказе в авторизации клиенту.*/
   if (!auth) {
     res.sendStatus(HttpStatuses.Unauthorized_401);
     return;

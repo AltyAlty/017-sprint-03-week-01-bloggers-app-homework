@@ -6,7 +6,7 @@ import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result
 import { authService } from '../../application/auth.service';
 import { RegistrationConfirmationCodeInputDTO } from '../input-dto/registration-confirmation-code.input-dto';
 
-/*Функция-обработчик "confirmUserByCodeHandler()" для POST-запросов по подтверждению регистрации пользователя по коду.*/
+/*Функция-обработчик для POST-запросов по подтверждению регистрации пользователя по коду.*/
 export const confirmUserByCodeHandler = async (
   req: Request<{}, {}, RegistrationConfirmationCodeInputDTO>,
   res: Response<void | ExtensionType[]>
@@ -19,12 +19,12 @@ export const confirmUserByCodeHandler = async (
     /*Получаем HTTP-статус операции по подтверждению регистрации пользователя по коду.*/
     const confirmEmailResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(confirmEmailResult.status);
 
-    /*Если подтвердить регистрацию пользователя по коду не удалось, то сообщаем об этом клиенту.*/
+    /*Если подтверждение регистрации пользователя по коду не прошло успешно, то сообщаем об этом клиенту.*/
     if (confirmEmailResultHttpStatus !== HttpStatuses.NoContent_204) {
       return res.status(confirmEmailResultHttpStatus).send(confirmEmailResult.extensions);
     }
 
-    /*Если подтвердить регистрацию пользователя по коду удалось, то сообщаем об этом клиенту.*/
+    /*Если подтверждение регистрации пользователя по коду прошло успешно, то сообщаем об этом клиенту.*/
     res.sendStatus(confirmEmailResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/

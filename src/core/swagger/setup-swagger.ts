@@ -18,8 +18,8 @@ const swaggerOptions = {
 /*Генерируем документацию API в формате Swagger.*/
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-/*Функция "setupSwagger()" для инициализации документации Swagger. В данном случае UI собираем удаленно, чтобы Swagger
-работал на vercel.com.*/
+/*Функция для инициализации документации Swagger. В данном случае UI собираем удаленно, чтобы Swagger работал на
+vercel.com.*/
 export const setupSwagger = (app: Express) => {
   app.get('/swagger.json', (_req, res) => res.json(swaggerSpec));
 

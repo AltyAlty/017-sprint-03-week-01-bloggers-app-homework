@@ -3,7 +3,7 @@ import { HttpStatuses } from '../types/http-statuses';
 import { DomainError } from './domain.error';
 import { createErrorMessages } from '../middlewares/validation/input-validation-result.middleware';
 
-/*Функция "errorsHandler()" занимается перехватом ошибок в UI слое.*/
+/*Функция для перехвата ошибок в UI слое.*/
 export const errorsHandler = (error: unknown, res: Response): void => {
   /*Если перехваченная ошибка является ошибкой, когда к сущности нельзя применить какую-то операцию в BLL, то
   сообщаем об этом клиенту.*/

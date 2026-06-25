@@ -3,7 +3,7 @@ import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import { SETTINGS } from '../../../src/core/settings/settings';
 import { createBlog } from '../../utils/blogs/create-blog.test-util';
 import { getBlogById } from '../../utils/blogs/get-blog-by-id.test-util';
-import { UpdateBlogInputDTO } from '../../../src/blogs/routes/input-dto/update-blog.input-dto';
+import { UpdateBlogByIdInputDTO } from '../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
 import { updateBlogById } from '../../utils/blogs/update-blog-by-id.test-util';
 import { BlogOutputDTO } from '../../../src/blogs/routes/output-dto/blog.output-dto';
 import { getUpdateBlogInputDTO } from '../../utils/blogs/get-update-blog-input-dto.test-util';
@@ -88,7 +88,7 @@ describe('Blogs API', () => {
   it('✅ 005 should update a blog by ID; PUT /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
-    const updateBlogData: UpdateBlogInputDTO = getUpdateBlogInputDTO();
+    const updateBlogData: UpdateBlogByIdInputDTO = getUpdateBlogInputDTO();
 
     await updateBlogById(app, createdBlogId, updateBlogData);
 
