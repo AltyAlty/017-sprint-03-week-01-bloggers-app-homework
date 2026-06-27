@@ -5,7 +5,11 @@ import { HttpStatuses } from '../../../core/types/http-statuses';
 import { SETTINGS } from '../../../core/settings/settings';
 
 /*Middleware для проверки AT в запросах.*/
-export const accessTokenGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const accessTokenGuardMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void | Response> => {
   /*Если в заголовках запроса нет заголовка "authorization", то сообщаем об отказе в аутентификации клиенту.*/
   if (!req.headers.authorization) return res.sendStatus(HttpStatuses.Unauthorized_401);
   /*Если в заголовках запроса есть заголовок "authorization", то получаем из него тип авторизации и токен.*/
@@ -21,9 +25,8 @@ export const accessTokenGuardMiddleware = async (req: Request, res: Response, ne
     const { userId }: { userId: string } = payload;
     req.userId = { id: userId } as IdType;
     next();
-    return;
   }
 
   /*Если верификация токена не прошла успешно, то сообщаем об отказе в аутентификации клиенту.*/
-  res.sendStatus(HttpStatuses.Unauthorized_401);
+  return res.sendStatus(HttpStatuses.Unauthorized_401);
 };

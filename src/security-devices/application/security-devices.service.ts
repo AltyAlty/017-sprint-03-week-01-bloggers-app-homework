@@ -13,7 +13,7 @@ export const securityDevicesService = {
     /*Просим репозиторий "securityDevicesRepository" добавить устройство пользователя в БД.*/
     const createdSecurityDeviceId: string = await securityDevicesRepository.create(securityDevice);
 
-    /*Возвращаем ResultObject c ID созданного устройства пользователя.*/
+    /*Возвращаем ResultObject с ID созданного устройства пользователя.*/
     return {
       status: ResultStatuses.Created,
       data: { createdSecurityDeviceId },
@@ -21,7 +21,7 @@ export const securityDevicesService = {
     };
   },
 
-  /*Метод для поиска устройства пользователя по имени устройства пользователя.*/
+  /*Метод для поиска устройства пользователя по ID.*/
   async findById(id: string): Promise<Result<{ securityDeviceOutput: SecurityDeviceOutputDTO } | null>> {
     /*Просим репозиторий "securityDevicesRepository" найти устройство пользователя по ID в БД.*/
     const securityDeviceDB: SecurityDeviceDBType | null = await securityDevicesRepository.findById(id);
@@ -40,7 +40,7 @@ export const securityDevicesService = {
     отправки клиенту устройство пользователя.*/
     const securityDeviceOutput: SecurityDeviceOutputDTO = mapToSecurityDeviceOutputDTO(securityDeviceDB);
 
-    /*Возвращаем ResultObject c преобразованным устройством пользователя.*/
+    /*Возвращаем ResultObject с преобразованным устройством пользователя.*/
     return {
       status: ResultStatuses.Ok,
       data: { securityDeviceOutput },
@@ -63,7 +63,7 @@ export const securityDevicesService = {
       };
     }
 
-    /*Если устройство пользователя было изменено, то возвращаем ResultObject c информацией об этом.*/
+    /*Если устройство пользователя было изменено, то возвращаем ResultObject с информацией об этом.*/
     return {
       status: ResultStatuses.NoContent,
       data: {},

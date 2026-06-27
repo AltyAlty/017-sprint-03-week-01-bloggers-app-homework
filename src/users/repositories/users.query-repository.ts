@@ -47,8 +47,8 @@ export const usersQueryRepository = {
     if (searchEmailTerm) conditions.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
     const filter: Filter<UserType> = conditions.length > 0 ? { $or: conditions } : {};
 
-    /*Просим коллекцию "usersCollection" найти пользователей по ID в БД и подсчитать общее количество документов,
-    подходящих под фильтр, без учета пагинации.*/
+    /*Просим коллекцию "usersCollection" найти пользователей в БД и подсчитать общее количество документов, подходящих
+    под фильтр, без учета пагинации.*/
     const [items, totalCount]: [UserDBType[], number] = await Promise.all([
       db.usersCollection
         .find(filter)

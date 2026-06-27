@@ -1,6 +1,6 @@
-import { body } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 
-export const titleValidation = body('title')
+export const titleValidation: ValidationChain = body('title')
   .exists()
   .withMessage('Field "title" is required')
   .isString()
@@ -11,7 +11,7 @@ export const titleValidation = body('title')
   .isLength({ min: 1, max: 30 })
   .withMessage('Field "title" must be between 1 and 30 characters');
 
-export const shortDescriptionValidation = body('shortDescription')
+export const shortDescriptionValidation: ValidationChain = body('shortDescription')
   .exists()
   .withMessage('Field "shortDescription" is required')
   .isString()
@@ -22,7 +22,7 @@ export const shortDescriptionValidation = body('shortDescription')
   .isLength({ min: 1, max: 100 })
   .withMessage('Field "shortDescription" must be between 1 and 100 characters');
 
-export const contentValidation = body('content')
+export const contentValidation: ValidationChain = body('content')
   .exists()
   .withMessage('Field "content" is required')
   .isString()
@@ -38,7 +38,7 @@ export const contentValidation = body('content')
 2. Является строкой.
 3. Не является пустым.
 4. Соответствует формату ObjectId.*/
-export const blogIdValidation = body('blogId')
+export const blogIdValidation: ValidationChain = body('blogId')
   .exists()
   .withMessage('Field "blogId" is required')
   .isString()

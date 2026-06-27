@@ -1,8 +1,8 @@
-import { ResultStatuses } from '../../types/result/result-statuses';
-import { HttpStatuses } from '../../types/http-statuses';
+import { ResultStatuses } from '../../../types/result/result-statuses';
+import { HttpStatuses } from '../../../types/http-statuses';
 
 /*Функция для преобразования статусов кодов ответа сервера из формата ResultObject в формат "HttpStatuses".*/
-export const mapResultCodeToHttpStatus = (resultCode: ResultStatuses): number => {
+export const mapResultCodeToHttpStatus = (resultCode: ResultStatuses): HttpStatuses => {
   switch (resultCode) {
     case ResultStatuses.Ok:
       return HttpStatuses.Ok_200;
@@ -27,6 +27,9 @@ export const mapResultCodeToHttpStatus = (resultCode: ResultStatuses): number =>
 
     case ResultStatuses.UnprocessableEntity:
       return HttpStatuses.UnprocessableEntity_422;
+
+    case ResultStatuses.TooManyRequest:
+      return HttpStatuses.TooManyRequest_429;
 
     default:
       return HttpStatuses.InternalServerError_500;

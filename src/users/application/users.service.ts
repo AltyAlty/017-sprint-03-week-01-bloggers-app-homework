@@ -18,8 +18,8 @@ export const usersService = {
   ): Promise<Result<{ createdUserId: string }>> {
     /*Создаем переменные на основе параметра "dto" при помощи деструктуризации.*/
     const { login, password, email }: { login: string; password: string; email: string } = dto;
-    /*Просим адаптер "argon2Adapter" сгенерировать хэш для пароля.*/
-    const passwordHash: string = await argon2Adapter.generateHash(password);
+    /*Просим адаптер "argon2Adapter" сгенерировать хеш для пароля.*/
+    const passwordHash: string = await argon2Adapter.generatePasswordHash(password);
 
     /*Создаем объект с данными нового пользователя.*/
     const newUser: UserType = {
@@ -37,7 +37,7 @@ export const usersService = {
     /*Просим репозиторий "usersRepository" создать нового пользователя в БД.*/
     const createdUserId: string = await usersRepository.create(newUser);
 
-    /*Возвращаем ResultObject c ID пользователя.*/
+    /*Возвращаем ResultObject с ID пользователя.*/
     return {
       status: ResultStatuses.Created,
       data: { createdUserId },
@@ -63,7 +63,7 @@ export const usersService = {
     /*Если пользователь был найден, то преобразовываем пользователя из БД в подготовленного для отправки пользователя.*/
     const userOutput: UserOutputDTO = mapToUserOutputDTO(userDB);
 
-    /*Возвращаем ResultObject c преобразованным пользователем.*/
+    /*Возвращаем ResultObject с преобразованным пользователем.*/
     return {
       status: ResultStatuses.Ok,
       data: { userOutput },
@@ -96,7 +96,7 @@ export const usersService = {
     /*Если пользователь был найден, то преобразовываем пользователя из БД в подготовленного для отправки пользователя.*/
     const userOutput: UserOutputDTO = mapToUserOutputDTO(userDB);
 
-    /*Возвращаем ResultObject c преобразованным пользователем.*/
+    /*Возвращаем ResultObject с преобразованным пользователем.*/
     return {
       status: ResultStatuses.Ok,
       data: {
@@ -178,7 +178,7 @@ export const usersService = {
       };
     }
 
-    /*Если пользователь был удален, то возвращаем ResultObject c информацией об этом.*/
+    /*Если пользователь был удален, то возвращаем ResultObject с информацией об этом.*/
     return {
       status: ResultStatuses.NoContent,
       data: {},

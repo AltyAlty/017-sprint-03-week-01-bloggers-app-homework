@@ -33,7 +33,7 @@ export const postsService = {
     /*Просим репозиторий "postsRepository" создать пост в БД.*/
     const createdPostId: string = await postsRepository.create(newPost);
 
-    /*Возвращаем ResultObject c ID созданного поста.*/
+    /*Возвращаем ResultObject с ID созданного поста.*/
     return {
       status: ResultStatuses.Created,
       data: { createdPostId },
@@ -59,7 +59,7 @@ export const postsService = {
     /*Если пост был найден, то преобразовываем пост из БД в подготовленный для отправки клиенту пост.*/
     const postOutput: PostOutputDTO = mapToPostOutputDTO(postDB);
 
-    /*Возвращаем ResultObject c преобразованным постом.*/
+    /*Возвращаем ResultObject с преобразованным постом.*/
     return {
       status: ResultStatuses.Ok,
       data: { postOutput },
@@ -82,7 +82,7 @@ export const postsService = {
       };
     }
 
-    /*Если пост был изменен, то возвращаем ResultObject c информацией об этом.*/
+    /*Если пост был изменен, то возвращаем ResultObject с информацией об этом.*/
     return {
       status: ResultStatuses.NoContent,
       data: {},
@@ -107,7 +107,7 @@ export const postsService = {
       };
     }
 
-    /*Если пост был удален, то возвращаем ResultObject c информацией об этом.*/
+    /*Если пост был удален, то возвращаем ResultObject с информацией об этом.*/
     return {
       status: ResultStatuses.NoContent,
       data: {},
@@ -128,14 +128,14 @@ export const postsService = {
     if (postsDB) {
       /*Получаем массив ID постов внутри блога.*/
       const postIds: string[] = postsDB.map(post => String(post._id));
-      /*Просим сервис "commentsService" удалить комментарии ID постов.*/
+      /*Просим сервис "commentsService" удалить комментарии по ID постов.*/
       await commentsService.deleteAllByPostIds(postIds);
     }
 
     /*Просим репозиторий "postsRepository" удалить посты по ID блога в БД.*/
     const deletedPostsCount: number = await postsRepository.deleteAllByBlogId(blogId);
 
-    /*Возвращаем ResultObject c информацией об удалении постов.*/
+    /*Возвращаем ResultObject с информацией об удалении постов.*/
     return {
       status: ResultStatuses.NoContent,
       data: { deletedPostsCount },

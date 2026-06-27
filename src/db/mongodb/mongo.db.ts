@@ -26,12 +26,16 @@ export const db = {
   requestRateLimitLogsCollection: {} as Collection<RequestRateLimitLogType>,
 
   /*Метод для подключения к серверу MongoDB.*/
-  async runDB(url: string, dbName: string) {
+  async runDB(url: string, dbName: string): Promise<void> {
     try {
       /*Создаем клиент для MongoDB.*/
       this.client = new MongoClient(url);
+      /*Присоединяем клиента для MongoDB к серверу и проверяем соединение.*/
+      await this.client.connect();
       /*Указываем БД, к которой будет подключаться клиент для MongoDB.*/
       this.db = this.client.db(dbName);
+      await this.db.command({ ping: 1 });
+      console.log('✅ Successfully connected to a MongoDB server');
       /*Создаем коллекции в указанной БД.*/
       this.blogsCollection = this.db.collection<BlogType>(SETTINGS.BLOGS_COLLECTION_NAME);
       this.postsCollection = this.db.collection<PostType>(SETTINGS.POSTS_COLLECTION_NAME);
@@ -55,26 +59,21 @@ export const db = {
 
       /*Используем составной индекс, чтобы ускорить работу метода "countDocuments()".*/
       await this.requestRateLimitLogsCollection.createIndex({ ip: 1, url: 1, timestamp: -1 });
-
-      /*Присоединяем клиента для MongoDB к серверу и проверяем соединение.*/
-      await this.client.connect();
-      await this.db.command({ ping: 1 });
-      console.log('✅ Successfully connected to a MongoDB server');
     } catch (error: unknown) {
-      await this.client.close();
+      if (this.client) await this.client.close();
       throw new Error(`❌ Cannot connect to a MongoDB server: ${error}`);
     }
   },
 
   /*Метод для отключения от сервера MongoDB.*/
-  async stopDB() {
+  async stopDB(): Promise<void> {
     if (!this.client) throw new Error(`❌ No MongoDB clients`);
     await this.client.close();
     console.log('✅ Connection successfully closed');
   },
 
   /*Метод для очистки коллекций в БД.*/
-  async dropDB() {
+  async dropDB(): Promise<void> {
     try {
       /*Очищаем коллекции.*/
       await Promise.all([
@@ -88,7 +87,12 @@ export const db = {
       ]);
     } catch (error: unknown) {
       console.error(`❌ Error while dropping DB: ${error}`);
-      await this.stopDB();
+
+      try {
+        await this.stopDB();
+      } catch (stopDBError) {
+        console.error(`❌ Error while stopping DB: ${stopDBError}`);
+      }
     }
   },
 };

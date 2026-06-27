@@ -42,7 +42,7 @@ export const postsQueryRepository = {
     /*Динамически собираем фильтр для поиска в MongoDB. Начинаем с пустого фильтра.*/
     const filter: Filter<PostType> = {};
     /*Если был указан ID блога, то добавляем его в фильтр.*/
-    if (blogId) filter.blogId = { $regex: blogId, $options: 'i' };
+    if (blogId) filter.blogId = blogId;
 
     /*Просим коллекцию "postsCollection" найти посты в БД и подсчитать общее количество документов, подходящих под
     фильтр, без учета пагинации.*/

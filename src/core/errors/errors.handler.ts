@@ -4,13 +4,13 @@ import { DomainError } from './domain.error';
 import { createErrorMessages } from '../middlewares/validation/input-validation-result.middleware';
 
 /*Функция для перехвата ошибок в UI слое.*/
-export const errorsHandler = (error: unknown, res: Response): void => {
+export const errorsHandler = (error: unknown, res: Response): void | Response => {
   /*Если перехваченная ошибка является ошибкой, когда к сущности нельзя применить какую-то операцию в BLL, то
   сообщаем об этом клиенту.*/
   if (error instanceof DomainError) {
     const httpStatus: HttpStatuses = HttpStatuses.UnprocessableEntity_422;
 
-    res.status(httpStatus).send(
+    return res.status(httpStatus).send(
       createErrorMessages([
         {
           field: error.code,
@@ -18,11 +18,8 @@ export const errorsHandler = (error: unknown, res: Response): void => {
         },
       ])
     );
-
-    return;
   }
 
   /*Если же перехваченная ошибка является ошибкой какого-то другого типа, то сообщаем об этом клиенту.*/
-  res.status(HttpStatuses.InternalServerError_500).json(error);
-  return;
+  return res.status(HttpStatuses.InternalServerError_500).json(error);
 };

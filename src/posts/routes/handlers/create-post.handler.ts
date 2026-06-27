@@ -3,7 +3,7 @@ import { postsService } from '../../application/posts.service';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { CreatePostInputDTO } from '../input-dto/create-post.input-dto';
 import { postsQueryService } from '../../application/posts.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PostOutputDTO } from '../output-dto/post.output-dto';
@@ -12,7 +12,7 @@ import { PostOutputDTO } from '../output-dto/post.output-dto';
 export const createPostHandler = async (
   req: Request<{}, {}, CreatePostInputDTO>,
   res: Response<PostOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<PostOutputDTO | ExtensionType[]>> => {
   try {
     /*Просим сервис "postsService" создать пост.*/
     const createdPostResult: Result<{ createdPostId: string } | null> = await postsService.create(req.body);
@@ -33,9 +33,9 @@ export const createPostHandler = async (
     }
 
     /*Если созданный пост был найден, то отправляем его клиенту.*/
-    res.status(createdPostResultHttpStatus).send(postResult.data!.postOutput);
+    return res.status(createdPostResultHttpStatus).send(postResult.data!.postOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

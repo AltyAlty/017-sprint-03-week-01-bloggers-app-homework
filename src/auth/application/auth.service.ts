@@ -16,7 +16,6 @@ import { securityDevicesService } from '../../security-devices/application/secur
 import { SessionDBType } from '../repositories/types/session-db.type';
 import { mapToSessionList } from '../repositories/mappers/map-to-session-list.util';
 import { SessionListType } from './types/session-list.type';
-import { securityDevicesRepository } from '../../security-devices/repositories/security-devices.repository';
 import { SecurityDeviceOutputDTO } from '../../security-devices/routes/output-dto/security-device.output-dto';
 
 /*Сервис для работы с аутентификацией и авторизацией.*/
@@ -61,7 +60,7 @@ export const authService = {
         status: ResultStatuses.InternalServerError,
         data: null,
         errorMessage: 'Internal Server Error',
-        extensions: [{ field: 'refreshToken', message: 'Bad token created. Please retry' }],
+        extensions: [{ field: 'refresh token', message: 'Bad token created. Please retry' }],
       };
     }
 
@@ -88,12 +87,12 @@ export const authService = {
     };
   },
 
-  /*Метод для регистрации пользователя.*/
+  /*Метод для регистрации пользователя. Второй параметр для использования в тестах.*/
   async registerUser(
     dto: CreateUserInputDTO,
     emailAdapter = nodemailerAdapter
   ): Promise<Result<{ createdUserId: string }>> {
-    /*Создаем объект с данными о подтверждении email.*/
+    /*Создаем объект с данными о процессе подтверждения регистрации пользователя.*/
     const newUserEmailConfirmationData: EmailConfirmationType = {
       isConfirmed: false,
       confirmationCode: randomUUID(),
@@ -220,7 +219,7 @@ export const authService = {
     /*Если сессии были найдены, то преобразовываем сессии из БД в подготовленные для работы внутри приложения сессии.*/
     const sessionListOutput: SessionListType = mapToSessionList(sessionsDB);
 
-    /*Возвращаем ResultObject c преобразованным сессиями.*/
+    /*Возвращаем ResultObject с преобразованным сессиями.*/
     return {
       status: ResultStatuses.Ok,
       data: { sessionListOutput },
@@ -228,26 +227,27 @@ export const authService = {
     };
   },
 
-  /*Метод для повторной отправки письма для подтверждения регистрация пользователя.*/
+  /*Метод для повторной отправки письма для подтверждения регистрации пользователя. Второй параметр для использования в
+  тестах.*/
   async resendConfirmationEmail(email: string, emailAdapter = nodemailerAdapter): Promise<Result<{} | null>> {
-    /*Создаем объект с данными о подтверждении email.*/
+    /*Создаем объект с данными о процессе подтверждения регистрации пользователя.*/
     const newUserEmailConfirmationData: EmailConfirmationType = {
       isConfirmed: false,
       confirmationCode: randomUUID(),
       expirationDate: add(new Date(), SETTINGS.DEFAULT_CODE_EXPIRATION_TIME),
     };
 
-    /*Просим сервис "usersService" изменить данные для подтверждения регистрации пользователя по email.*/
+    /*Просим сервис "usersService" изменить данные о процессе подтверждения регистрации пользователя по email.*/
     const updateUserResult: Result<{} | null> = await usersService.updateEmailConfirmationByEmail(
       email,
       newUserEmailConfirmationData
     );
 
-    /*Если данные для подтверждения регистрации пользователя не были изменены, то возвращаем ResultObject с информацией
-    об этом.*/
+    /*Если данные о процессе подтверждения регистрации пользователя не были изменены, то возвращаем ResultObject с
+    информацией об этом.*/
     if (updateUserResult.status !== ResultStatuses.NoContent) return updateUserResult;
 
-    /*Если данные для подтверждения регистрации пользователя были изменены, то просим адаптер "nodemailerAdapter"
+    /*Если данные о процессе подтверждения регистрации пользователя были изменены, то просим адаптер "nodemailerAdapter"
     повторно отправить письмо о подтверждении регистрации пользователю.*/
     emailAdapter
       .sendMail(
@@ -356,7 +356,7 @@ export const authService = {
 
     /*Если сессия была найдена и она принадлежит другому пользователя, то возвращаем ResultObject с информацией об
     этом.*/
-    if (sessionDB && sessionDB.userId !== userId) {
+    if (sessionDB.userId !== userId) {
       return {
         status: ResultStatuses.Forbidden,
         data: null,
@@ -397,18 +397,20 @@ export const authService = {
       };
     }
 
-    /*Если у пользователя не была подтверждена регистрация, то возвращаем ResultObject с информацией об этом.*/
-    if (!userResult.data?.userOutputWithPasswordHashAndEmailConfirmation.emailConfirmation.isConfirmed) {
+    /*Если пользователь не был найден, но у него не была подтверждена регистрация, то возвращаем ResultObject с
+    информацией об этом.*/
+    if (!userResult.data!.userOutputWithPasswordHashAndEmailConfirmation.emailConfirmation.isConfirmed) {
       return {
         status: ResultStatuses.Unauthorized,
         data: null,
         errorMessage: 'Unauthorized',
-        extensions: [{ field: 'email', message: 'Email not confirmed' }],
+        extensions: [{ field: 'email', message: 'Email is not confirmed' }],
       };
     }
 
-    /*Если пользователь был найден, то просим адаптер "argon2Adapter" проверить валидность пароля.*/
-    const isPasswordValid: boolean = await argon2Adapter.checkPassword(
+    /*Если пользователь был найден и у него была подтверждена регистрация, то просим адаптер "argon2Adapter" проверить
+    валидность пароля.*/
+    const isPasswordValid: boolean = await argon2Adapter.checkPasswordByHash(
       password,
       userResult.data!.userOutputWithPasswordHashAndEmailConfirmation.passwordHash
     );

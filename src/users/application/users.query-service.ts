@@ -28,7 +28,7 @@ export const usersQueryService = {
     /*Если пользователь был найден, то преобразовываем пользователя из БД в подготовленного для отправки пользователя.*/
     const userOutput: UserOutputDTO = mapToUserOutputDTO(userDB);
 
-    /*Возвращаем ResultObject c преобразованным пользователем.*/
+    /*Возвращаем ResultObject с преобразованным пользователем.*/
     return {
       status: ResultStatuses.Ok,
       data: { userOutput },
@@ -51,7 +51,7 @@ export const usersQueryService = {
       totalCount,
     });
 
-    /*Возвращаем ResultObject c преобразованными пользователями.*/
+    /*Возвращаем ResultObject с преобразованными пользователями.*/
     return {
       status: ResultStatuses.Ok,
       data: { paginatedUserListOutput },

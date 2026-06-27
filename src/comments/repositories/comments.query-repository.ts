@@ -42,7 +42,7 @@ export const commentsQueryRepository = {
     /*Динамически собираем фильтр для поиска в MongoDB. Начинаем с пустого фильтра.*/
     const filter: Filter<CommentType> = {};
     /*Добавляем в фильтр ID поста.*/
-    filter.postId = { $regex: postId, $options: 'i' };
+    filter.postId = postId;
 
     /*Просим коллекцию "commentsCollection" найти комментарии в посте по ID в БД и подсчитать общее количество
     документов, подходящих под фильтр, без учета пагинации.*/

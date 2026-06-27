@@ -24,7 +24,7 @@ commentsRouter
   )
   /*002. DELETE-запрос по удалению комментария по ID, используя URI-параметры.*/
   .delete(
-    SETTINGS.UPDATE_COMMENT_BY_ID_PATH,
+    SETTINGS.DELETE_COMMENT_BY_ID_PATH,
     accessTokenGuardMiddleware,
     idValidation,
     inputValidationResultMiddleware,

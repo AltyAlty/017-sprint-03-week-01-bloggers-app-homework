@@ -1,27 +1,17 @@
 import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { blogsQueryService } from '../../application/blogs.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { BlogOutputDTO } from '../output-dto/blog.output-dto';
 import { GetBlogByIdUriInputDTO } from '../input-dto/uri/get-blog-by-id-uri.input-dto';
 
-/*"Request" из Express используется для типизации параметра "req", а "Response" из Express используется для типизации
-параметра "res".
-
-Типизация первого параметра "req" второго параметра в виде асинхронной функции методов "get()", "post()", "delete()" и
-"put()" внутри роутеров из Express:
-1. На первом месте в типе идут URI-параметры.
-2. На втором месте в типе идет "ResBody". Относится к параметру "res" внутри запроса, то есть что будет возвращено.
-3. На третьем месте в типе идет "ReqBody". Это то, что приходит в body в запросе.
-4. На четвертом месте в типе идут query-параметры.
-
-Функция-обработчик для GET-запросов по получению блога по ID, используя URI-параметры.*/
+/*Функция-обработчик для GET-запросов по получению блога по ID, используя URI-параметры.*/
 export const getBlogByIdHandler = async (
   req: Request<GetBlogByIdUriInputDTO>,
   res: Response<BlogOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<BlogOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID блога.*/
     const blogId: string = req.params.id;
@@ -36,9 +26,9 @@ export const getBlogByIdHandler = async (
     }
 
     /*Если блог был найден, то отправляем его клиенту.*/
-    res.status(blogResultHttpStatus).send(blogResult.data!.blogOutput);
+    return res.status(blogResultHttpStatus).send(blogResult.data!.blogOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

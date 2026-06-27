@@ -1,6 +1,6 @@
-import { body } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 
-const contentValidation = body('content')
+const contentValidation: ValidationChain = body('content')
   .exists()
   .withMessage('Field "content" is required')
   .isString()

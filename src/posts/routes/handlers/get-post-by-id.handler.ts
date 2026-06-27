@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { postsQueryService } from '../../application/posts.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PostOutputDTO } from '../output-dto/post.output-dto';
 import { GetPostByIdUriInputDTO } from '../input-dto/uri/get-post-by-id-uri.input-dto';
@@ -11,7 +11,7 @@ import { GetPostByIdUriInputDTO } from '../input-dto/uri/get-post-by-id-uri.inpu
 export const getPostByIdHandler = async (
   req: Request<GetPostByIdUriInputDTO>,
   res: Response<PostOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<PostOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID поста.*/
     const postId: string = req.params.id;
@@ -26,9 +26,9 @@ export const getPostByIdHandler = async (
     }
 
     /*Если пост был найден, то отправляем его клиенту.*/
-    res.status(postResultHttpStatus).send(postResult.data?.postOutput);
+    return res.status(postResultHttpStatus).send(postResult.data!.postOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

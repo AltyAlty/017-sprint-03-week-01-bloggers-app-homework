@@ -8,5 +8,6 @@ export enum ResultStatuses {
   Forbidden = 'Forbidden',
   NotFound = 'NotFound',
   UnprocessableEntity = 'UnprocessableEntity',
+  TooManyRequest = 'TooManyRequest',
   InternalServerError = 'InternalServerError',
 }

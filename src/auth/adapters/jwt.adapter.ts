@@ -31,7 +31,7 @@ export const jwtAdapter = {
     return new Promise(resolve => {
       const onVerifyComplete = (error: Error | null, decoded: unknown): void => {
         if (error) {
-          // console.log('Token verification error');
+          // console.log('Access token verification error');
           // console.log(error);
           resolve(null);
         } else resolve(decoded as { userId: string });
@@ -46,7 +46,7 @@ export const jwtAdapter = {
     return new Promise(resolve => {
       const onVerifyComplete = (error: Error | null, decoded: unknown): void => {
         if (error) {
-          // console.log('Token verification error');
+          // console.log('Refresh token verification error');
           // console.log(error);
           resolve(null);
         } else resolve(decoded as { userId: string; deviceId: string });
@@ -75,7 +75,7 @@ export const jwtAdapter = {
         exp: payload.exp,
       };
     } catch (error) {
-      // console.log('Token decoding error');
+      // console.log('Refresh token decoding error');
       // console.log(error);
       return null;
     }
@@ -96,7 +96,7 @@ export const jwtAdapter = {
     try {
       return jwt.verify(token, secret) as { userId: string };
     } catch (error) {
-      // console.error('Token verification error');
+      // console.error('Access token verification error');
       // console.log(error);
       return null;
     }
@@ -107,7 +107,7 @@ export const jwtAdapter = {
     try {
       return jwt.verify(token, secret) as { userId: string; deviceId: string };
     } catch (error) {
-      // console.error('Token verification error');
+      // console.error('Refresh token verification error');
       // console.log(error);
       return null;
     }

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { GetCommentListByPostIdQueryInputDTO } from '../../../comments/routes/input-dto/query/get-comment-list-by-post-id-query.input-dto';
 import { commentsQueryService } from '../../../comments/application/comments.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
@@ -15,7 +15,7 @@ query-параметры.*/
 export const getCommentListByPostIdHandler = async (
   req: Request<GetCommentListByPostIdUriInputDTO, {}, {}, GetCommentListByPostIdQueryInputDTO>,
   res: Response<PaginatedCommentListOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<PaginatedCommentListOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID поста.*/
     const postId: string = req.params.postId;
@@ -41,9 +41,11 @@ export const getCommentListByPostIdHandler = async (
     }
 
     /*Если комментарии были найдены в посте, то отправляем их клиенту.*/
-    res.status(paginatedCommentListResultHttpStatus).send(paginatedCommentListResult.data!.paginatedCommentListOutput);
+    return res
+      .status(paginatedCommentListResultHttpStatus)
+      .send(paginatedCommentListResult.data!.paginatedCommentListOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

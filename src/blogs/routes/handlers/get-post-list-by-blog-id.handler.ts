@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { GetPostListByBlogIdQueryInputDTO } from '../../../posts/routes/input-dto/query/get-post-list-by-blog-id-query.input-dto';
 import { postsQueryService } from '../../../posts/application/posts.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { PaginatedPostListOutputDTO } from '../../../posts/routes/output-dto/paginated-post-list.output-dto';
@@ -15,7 +15,7 @@ query-параметры.*/
 export const getPostListByBlogIdHandler = async (
   req: Request<GetPostListByBlogIdUriInputDTO, {}, {}, GetPostListByBlogIdQueryInputDTO>,
   res: Response<PaginatedPostListOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<PaginatedPostListOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID блога.*/
     const blogId: string = req.params.blogId;
@@ -33,15 +33,15 @@ export const getPostListByBlogIdHandler = async (
     /*Получаем HTTP-статус операции по поиску постов в блоге по ID.*/
     const paginatedPostListResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(paginatedPostListResult.status);
 
-    /*Если данные посты в блоге не были найдены, то сообщаем об этом клиенту.*/
+    /*Если посты в блоге не были найдены, то сообщаем об этом клиенту.*/
     if (paginatedPostListResultHttpStatus !== HttpStatuses.Ok_200) {
       return res.status(paginatedPostListResultHttpStatus).send(paginatedPostListResult.extensions);
     }
 
     /*Если посты в блоге были найдены, то отправляем их клиенту.*/
-    res.status(paginatedPostListResultHttpStatus).send(paginatedPostListResult.data!.paginatedPostListOutput);
+    return res.status(paginatedPostListResultHttpStatus).send(paginatedPostListResult.data!.paginatedPostListOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

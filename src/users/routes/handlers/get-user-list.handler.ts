@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { GetUserListQueryInputDTO } from '../input-dto/query/get-user-list-query.input-dto';
 import { usersQueryService } from '../../application/users.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { PaginatedUserListOutputDTO } from '../output-dto/paginated-user-list.output-dto';
 import { Result } from '../../../core/types/result/result.type';
 import { HttpStatuses } from '../../../core/types/http-statuses';
@@ -13,7 +13,7 @@ import { UserSortFieldQueryInputDTO } from '../input-dto/query/user-sort-field-q
 export const getUserListHandler = async (
   req: Request<{}, {}, {}, GetUserListQueryInputDTO>,
   res: Response<PaginatedUserListOutputDTO>
-) => {
+): Promise<void | Response<PaginatedUserListOutputDTO>> => {
   try {
     /*Санитизируем query-параметры и добавляем к ним дефолтные настройки пагинации.*/
     const sanitizedQueryInputWithDefaultPaginationSettings = getSanitizedQueryInputWithDefaultPaginationSettings<
@@ -28,9 +28,9 @@ export const getUserListHandler = async (
     /*Получаем HTTP-статус операции по поиску пользователей.*/
     const paginatedUserListResultHttpStatus: HttpStatuses = mapResultCodeToHttpStatus(paginatedUserListResult.status);
     /*Отправляем пользователей клиенту.*/
-    res.status(paginatedUserListResultHttpStatus).send(paginatedUserListResult.data.paginatedUserListOutput);
+    return res.status(paginatedUserListResultHttpStatus).send(paginatedUserListResult.data.paginatedUserListOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

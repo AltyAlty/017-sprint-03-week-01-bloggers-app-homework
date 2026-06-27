@@ -3,7 +3,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { LoginDataInputDTO } from '../input-dto/login-data.input-dto';
 import { authService } from '../../application/auth.service';
 import { HttpStatuses } from '../../../core/types/http-statuses';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { LoginOutputDTO } from '../output-dto/login.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 
@@ -11,13 +11,13 @@ import { ExtensionType, Result } from '../../../core/types/result/result.type';
 export const authByLoginOrEmailHandler = async (
   req: Request<{}, {}, LoginDataInputDTO>,
   res: Response<LoginOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<LoginOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем логин/email и пароль пользователя.*/
     const { loginOrEmail, password }: { loginOrEmail: string; password: string } = req.body;
     /*Получаем имя устройства пользователя.*/
     const deviceName: string = req.headers['user-agent'] || 'Unknown Device';
-    /*Получаем IP-адресс пользователя.*/
+    /*Получаем IP-адрес пользователя.*/
     const ip: string = req.ip || req.socket.remoteAddress || '0.0.0.0';
 
     /*Просим сервис "authService" аутентифицировать пользователя по логину/email и паролю.*/
@@ -43,6 +43,6 @@ export const authByLoginOrEmailHandler = async (
       .send({ accessToken: loginUserResult.data!.accessToken });
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

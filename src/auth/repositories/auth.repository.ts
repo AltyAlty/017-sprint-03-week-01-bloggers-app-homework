@@ -39,11 +39,11 @@ export const authRepository = {
     return insertResult.insertedId.toString();
   },
 
-  /*Метод для подсчета количества записей в журнале лимитов запросов за указанный период по IP-адрессу и URL в БД.*/
+  /*Метод для подсчета количества записей в журнале лимитов запросов за указанный период по IP-адресу и URL в БД.*/
   async countRequestRateLimitLogsByIPAndUrl(ip: string, url: string, seconds: number): Promise<number> {
     /*Просим коллекцию "requestRateLimitLogsCollection" подсчитать количество записей в журнале лимитов запросов за
-    указанный период по IP-адрессу и URL в БД.*/
-    return await db.requestRateLimitLogsCollection.countDocuments({
+    указанный период по IP-адресу и URL в БД.*/
+    return db.requestRateLimitLogsCollection.countDocuments({
       ip: ip,
       url: url,
       timestamp: { $gte: new Date(Date.now() - seconds * 1000) },
@@ -92,7 +92,7 @@ export const authRepository = {
       { $set: { iat, exp, ip } }
     );
 
-    /*Возвращаем количество измененных сессий.*/
+    /*Возвращаем количество сессий, попавших под фильтр.*/
     return updateResult.matchedCount;
   },
 
@@ -120,14 +120,6 @@ export const authRepository = {
       deviceId: { $ne: deviceId },
     });
 
-    /*Возвращаем количество удаленных сессий.*/
-    return deleteResult.deletedCount;
-  },
-
-  /*Метод для удаления сессий по ID пользователя в БД.*/
-  async deleteAllSessionsByUserId(userId: string): Promise<number> {
-    /*Просим коллекцию "sessionsCollection" удалить сессии по ID пользователя в БД.*/
-    const deleteResult: DeleteResult = await db.sessionsCollection.deleteMany({ userId });
     /*Возвращаем количество удаленных сессий.*/
     return deleteResult.deletedCount;
   },

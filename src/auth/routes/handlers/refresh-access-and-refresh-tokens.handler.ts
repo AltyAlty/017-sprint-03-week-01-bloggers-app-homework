@@ -5,28 +5,22 @@ import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { authService } from '../../application/auth.service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 
 /*Функция-обработчик для POST-запросов по получению новой пары AT/RT.*/
 export const refreshAccessAndRefreshTokensHandler = async (
   req: Request<{}, {}, {}, {}, IdType>,
   res: Response<RefreshAccessAndRefreshTokensOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<RefreshAccessAndRefreshTokensOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID пользователя.*/
-    const userId: string = req.userId?.id as string;
-    /*Если ID пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
-    if (!userId) return res.sendStatus(HttpStatuses.Unauthorized_401);
+    const userId: string = req.userId!.id;
     /*Получаем ID устройства пользователя из сессии.*/
-    const deviceId: string = req.deviceId?.id as string;
-    /*Если ID устройства пользователя из сессии не был найден, то сообщаем об отказе в аутентификации клиенту.*/
-    if (!deviceId) return res.sendStatus(HttpStatuses.Unauthorized_401);
-    /*Получаем IP-адресс пользователя.*/
+    const deviceId: string = req.deviceId!.id;
+    /*Получаем IP-адрес пользователя.*/
     const ip: string = req.ip || req.socket.remoteAddress || '0.0.0.0';
     /*Получаем текущий RT.*/
     const currentRefreshToken: string = req.cookies.refreshToken;
-    /*Если текущий RT не был найден, то сообщаем об отказе в аутентификации клиенту.*/
-    if (!currentRefreshToken) return res.sendStatus(HttpStatuses.Unauthorized_401);
 
     /*Просим сервис "authService" перевыпустить пару AT/RT.*/
     const createAccessAndRefreshTokensResult: Result<{ accessToken: string; refreshToken: string } | null> =
@@ -51,6 +45,6 @@ export const refreshAccessAndRefreshTokensHandler = async (
       .send({ accessToken: createAccessAndRefreshTokensResult.data!.accessToken });
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

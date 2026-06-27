@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 import { usersRepository } from '../repositories/users.repository';
 import { UserDBType } from '../repositories/types/user-db.type';
 
@@ -9,7 +9,7 @@ import { UserDBType } from '../repositories/types/user-db.type';
 4. Состоит из не менее 3 и не более 10 символов.
 5. Содержит только буквы, цифры, нижние подчеркивания и тире.
 6. Является уникальным в БД.*/
-const loginValidation = body('login')
+const loginValidation: ValidationChain = body('login')
   .exists()
   .withMessage('Field "login" is required')
   .isString()
@@ -29,7 +29,7 @@ const loginValidation = body('login')
     return true;
   });
 
-const passwordValidation = body('password')
+const passwordValidation: ValidationChain = body('password')
   .exists()
   .withMessage('Field "password" is required')
   .isString()
@@ -46,7 +46,7 @@ const passwordValidation = body('password')
 3. Не является пустым.
 4. Соответствует формату электронной почты.
 5. Является уникальным в БД.*/
-const emailValidation = body('email')
+const emailValidation: ValidationChain = body('email')
   .exists()
   .withMessage('Field "email" is required')
   .isString()
@@ -61,7 +61,7 @@ const emailValidation = body('email')
   .custom(async (email: string) => {
     /*Просим репозиторий "usersRepository" найти пользователя по email в БД. Если пользователь будет найден, то это
     будет означать, что email не уникальный. В таком случае выкидываем ошибку с информацией об этом.*/
-    const user: UserDBType | null = await usersRepository.findByLoginOrEmail(email);
+    const user: UserDBType | null = await usersRepository.findByEmail(email);
     if (user) throw new Error('Field "email" must be unique');
     return true;
   });

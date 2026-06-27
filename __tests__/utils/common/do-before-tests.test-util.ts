@@ -5,7 +5,7 @@ import { SETTINGS } from '../../../src/core/settings/settings';
 import { clearDB } from '../db/clear-db.test-util';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-/*Функция "doBeforeTests()" для предварительных действий перед запуском тестов.*/
+/*Функция для предварительных действий перед запуском тестов.*/
 export const doBeforeTests = () => {
   /*Создаем экземпляр приложения Express.*/
   const app = express();
@@ -31,8 +31,7 @@ export const doBeforeTests = () => {
   return app;
 };
 
-/*Функция "doBeforeTestsWithMongoMemoryServer()" для предварительных действий перед запуском тестов, используя моковый
-сервер.*/
+/*Функция для предварительных действий перед запуском тестов, используя моковый сервер.*/
 export const doBeforeTestsWithMongoMemoryServer = () => {
   /*Создаем экземпляр приложения Express.*/
   const app = express();

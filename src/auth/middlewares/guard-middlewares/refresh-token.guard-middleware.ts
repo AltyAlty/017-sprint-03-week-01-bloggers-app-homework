@@ -11,17 +11,21 @@ import { usersRepository } from '../../../users/repositories/users.repository';
 import { UserDBType } from '../../../users/repositories/types/user-db.type';
 
 /*Middleware для проверки RT в запросах.*/
-export const refreshTokenGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshTokenGuardMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void | Response> => {
   /*Получаем имя устройства пользователя из запроса.*/
   const deviceName: string | undefined = req.headers['user-agent'];
   /*Если имя устройства пользователя не было найдено, то сообщаем об отказе в аутентификации клиенту.*/
   if (!deviceName) return res.sendStatus(HttpStatuses.Unauthorized_401);
-  /*Если имя устройства было найдено, то получаем IP-адресс пользователя из запроса.*/
+  /*Если имя устройства было найдено, то получаем IP-адрес пользователя из запроса.*/
   const ip: string | undefined = req.ip || req.socket.remoteAddress;
-  /*Если IP-адресс пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
+  /*Если IP-адрес пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
   if (!ip) return res.sendStatus(HttpStatuses.Unauthorized_401);
-  /*Если IP-адресс пользователя был найден, то получаем RT из cookies.*/
-  const refreshToken: string = req.cookies.refreshToken;
+  /*Если IP-адрес пользователя был найден, то получаем RT из cookies.*/
+  const refreshToken: string | undefined = req.cookies.refreshToken;
   /*Если RT не был найден, то сообщаем об отказе в аутентификации клиенту.*/
   if (!refreshToken) return res.sendStatus(HttpStatuses.Unauthorized_401);
 

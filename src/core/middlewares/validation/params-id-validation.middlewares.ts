@@ -1,7 +1,7 @@
 /*Импортируем метод "param()" из библиотеки express-validator, чтобы проверять ID.*/
-import { param } from 'express-validator';
+import { param, ValidationChain } from 'express-validator';
 
-export const idValidation = param('id')
+export const idValidation: ValidationChain = param('id')
   .exists()
   .withMessage('Field "id" is required')
   .isString()
@@ -12,7 +12,7 @@ export const idValidation = param('id')
   .isMongoId()
   .withMessage('Field "id" must be an ObjectId');
 
-export const blogIdValidation = param('blogId')
+export const blogIdValidation: ValidationChain = param('blogId')
   .exists()
   .withMessage('Field "blogId" is required')
   .isString()
@@ -23,7 +23,7 @@ export const blogIdValidation = param('blogId')
   .isMongoId()
   .withMessage('Field "blogId" must be an ObjectId');
 
-export const postIdValidation = param('postId')
+export const postIdValidation: ValidationChain = param('postId')
   .exists()
   .withMessage('Field "postId" is required')
   .isString()

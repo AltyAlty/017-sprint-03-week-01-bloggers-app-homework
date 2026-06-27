@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { commentsQueryService } from '../../application/comments.query-service';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
@@ -11,7 +11,7 @@ import { GetCommentByIdUriInputDTO } from '../input-dto/uri/get-comment-by-id-ur
 export const getCommentByIdHandler = async (
   req: Request<GetCommentByIdUriInputDTO>,
   res: Response<CommentOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<CommentOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID комментария.*/
     const commentId: string = req.params.id;
@@ -29,9 +29,9 @@ export const getCommentByIdHandler = async (
     }
 
     /*Если комментарий был найден, то отправляем его клиенту.*/
-    res.status(commentResultHttpStatus).send(commentResult.data?.commentOutput);
+    return res.status(commentResultHttpStatus).send(commentResult.data!.commentOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

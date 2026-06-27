@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { UpdateBlogByIdInputDTO } from '../input-dto/update-blog-by-id.input-dto';
 import { blogsService } from '../../application/blogs.service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UpdateBlogByIdUriInputDTO } from '../input-dto/uri/update-blog-by-id-uri.input-dto';
@@ -11,7 +11,7 @@ import { UpdateBlogByIdUriInputDTO } from '../input-dto/uri/update-blog-by-id-ur
 export const updateBlogByIdHandler = async (
   req: Request<UpdateBlogByIdUriInputDTO, {}, UpdateBlogByIdInputDTO>,
   res: Response<void | ExtensionType[]>
-) => {
+): Promise<void | Response<void | ExtensionType[]>> => {
   try {
     /*Получаем ID блога.*/
     const blogId: string = req.params.id;
@@ -26,9 +26,9 @@ export const updateBlogByIdHandler = async (
     }
 
     /*Если блог был изменен, то сообщаем об этом клиенту.*/
-    res.sendStatus(updatedBlogResultHttpStatus);
+    return res.sendStatus(updatedBlogResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

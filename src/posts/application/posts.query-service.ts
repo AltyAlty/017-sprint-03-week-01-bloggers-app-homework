@@ -30,7 +30,7 @@ export const postsQueryService = {
     /*Если пост был найден, то преобразовываем пост из БД в подготовленный для отправки клиенту пост.*/
     const postOutput: PostOutputDTO = mapToPostOutputDTO(postDB);
 
-    /*Возвращаем ResultObject c преобразованным постом.*/
+    /*Возвращаем ResultObject с преобразованным постом.*/
     return {
       status: ResultStatuses.Ok,
       data: { postOutput },
@@ -51,7 +51,7 @@ export const postsQueryService = {
       if (blogResult.status !== ResultStatuses.Ok) return blogResult as Result;
     }
 
-    /*Если блог существует, то просим query-репозиторий "postsQueryRepository" найти посты по ID блога в БД.*/
+    /*Просим query-репозиторий "postsQueryRepository" найти посты в БД.*/
     const { items, totalCount }: { items: PostDBType[]; totalCount: number } = await postsQueryRepository.findAll(
       queryDTO,
       blogId
@@ -64,7 +64,7 @@ export const postsQueryService = {
       totalCount,
     });
 
-    /*Возвращаем ResultObject c преобразованными для пагинации постами.*/
+    /*Возвращаем ResultObject с преобразованными для пагинации постами.*/
     return {
       status: ResultStatuses.Ok,
       data: { paginatedPostListOutput },

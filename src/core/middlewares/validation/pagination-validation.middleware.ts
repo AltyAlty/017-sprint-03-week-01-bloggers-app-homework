@@ -1,4 +1,4 @@
-import { query } from 'express-validator';
+import { query, ValidationChain } from 'express-validator';
 import { SortDirection } from '../../types/pagination/sort-direction';
 import { DefaultPaginationSettingsType } from '../../types/pagination/default-pagination-settings.type';
 import { SETTINGS } from '../../settings/settings';
@@ -27,7 +27,9 @@ export const defaultPaginationSettings: DefaultPaginationSettingsType<string> = 
 1. "<T extends string>": объявляется дженерик-параметр типа T, который является строкой или строковым литералом.
 2. "sortFieldsEnum: Record<string, T>": указывается, что функция принимает объект, где ключи являются любыми строками,
 а значения являются значениями типа T.*/
-export const paginationValidationMiddleware = <T extends string>(sortFieldsEnum: Record<string, T>) => {
+export const paginationValidationMiddleware = <T extends string>(
+  sortFieldsEnum: Record<string, T>
+): ValidationChain[] => {
   /*Берем все значения из объекта "sortFieldsEnum" и формируем из них массив, обозначающий список полей, по которым
   разрешена сортировка.*/
   const allowedSortFields: string[] = Object.values(sortFieldsEnum);

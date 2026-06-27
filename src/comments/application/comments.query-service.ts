@@ -31,7 +31,7 @@ export const commentsQueryService = {
     комментарий.*/
     const commentOutput: CommentOutputDTO = mapToCommentOutputDTO(commentDB);
 
-    /*Возвращаем ResultObject c преобразованным комментарием.*/
+    /*Возвращаем ResultObject с преобразованным комментарием.*/
     return {
       status: ResultStatuses.Ok,
       data: { commentOutput },
@@ -60,7 +60,7 @@ export const commentsQueryService = {
       totalCount,
     });
 
-    /*Возвращаем ResultObject c преобразованными для пагинации комментариями.*/
+    /*Возвращаем ResultObject с преобразованными для пагинации комментариями.*/
     return {
       status: ResultStatuses.Ok,
       data: { paginatedCommentListOutput },

@@ -19,7 +19,11 @@ const mapToValidationErrorOutputDTO = (error: ValidationError): ValidationErrorO
 };
 
 /*Middleware для формирования ответа клиенту об ошибках валидации.*/
-export const inputValidationResultMiddleware = (req: Request<{}, {}, {}, {}>, res: Response, next: NextFunction) => {
+export const inputValidationResultMiddleware = (
+  req: Request<{}, {}, {}, {}>,
+  res: Response,
+  next: NextFunction
+): void | Response => {
   /*Если валидация при помощи библиотеки express-validator обнаруживает ошибки валидации, то информация об этих ошибках
   добавляется в объект запроса. Поэтому пытаемся здесь извлечь такие ошибки. Далее форматируем ошибки валидации при
   помощи функции "mapToValidationErrorOutputDTO()". Затем возвращаем массив, где для каждого поля оставляется только
@@ -29,11 +33,7 @@ export const inputValidationResultMiddleware = (req: Request<{}, {}, {}, {}>, re
     .array({ onlyFirstError: true });
 
   /*Если ошибки валидации были найдены, то сообщаем об этом клиенту.*/
-  if (errors.length > 0) {
-    res.status(HttpStatuses.BadRequest_400).json(createErrorMessages(errors));
-    return;
-  }
-
+  if (errors.length > 0) return res.status(HttpStatuses.BadRequest_400).json(createErrorMessages(errors));
   /*Если ошибок валидации не было найдено, то передаем управление следующему обработчику.*/
   next();
 };

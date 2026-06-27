@@ -1,12 +1,12 @@
 /*Импортируем метод "body()" из библиотеки express-validator, чтобы проверять тело запроса.*/
-import { body } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 
 /*Middleware для проверки, что поле "name":
 1. Существует в запросе.
 2. Является строкой.
 3. Не является пустым.
 4. Состоит из не менее 1 и не более 15 символов.*/
-const nameValidation = body('name')
+const nameValidation: ValidationChain = body('name')
   .exists()
   .withMessage('Field "name" is required')
   .isString()
@@ -17,7 +17,7 @@ const nameValidation = body('name')
   .isLength({ min: 1, max: 15 })
   .withMessage('Field "name" must be between 1 and 15 characters');
 
-const descriptionValidation = body('description')
+const descriptionValidation: ValidationChain = body('description')
   .exists()
   .withMessage('Field "description" is required')
   .isString()
@@ -34,7 +34,7 @@ const descriptionValidation = body('description')
 3. Не является пустым.
 4. Состоит из не менее 5 и не более 100 символов.
 5. Соответствует регулярному выражению ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$.*/
-const websiteUrlValidation = body('websiteUrl')
+const websiteUrlValidation: ValidationChain = body('websiteUrl')
   .exists()
   .withMessage('Field "websiteUrl" is required')
   .isString()

@@ -28,7 +28,7 @@ export const blogsQueryService = {
     /*Если блог был найден, то преобразовываем блог из БД в подготовленный для отправки клиенту блог.*/
     const blogOutput: BlogOutputDTO = mapToBlogOutputDTO(blogDB);
 
-    /*Возвращаем ResultObject c преобразованным блогом.*/
+    /*Возвращаем ResultObject с преобразованным блогом.*/
     return {
       status: ResultStatuses.Ok,
       data: { blogOutput },
@@ -51,7 +51,7 @@ export const blogsQueryService = {
       totalCount,
     });
 
-    /*Возвращаем ResultObject c преобразованными для пагинации блогами.*/
+    /*Возвращаем ResultObject с преобразованными для пагинации блогами.*/
     return {
       status: ResultStatuses.Ok,
       data: { paginatedBlogListOutput },

@@ -3,7 +3,7 @@ import { blogsService } from '../../application/blogs.service';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { CreateBlogInputDTO } from '../input-dto/create-blog.input-dto';
 import { blogsQueryService } from '../../application/blogs.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { BlogOutputDTO } from '../output-dto/blog.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
@@ -12,7 +12,7 @@ import { ExtensionType, Result } from '../../../core/types/result/result.type';
 export const createBlogHandler = async (
   req: Request<{}, {}, CreateBlogInputDTO>,
   res: Response<BlogOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<BlogOutputDTO | ExtensionType[]>> => {
   try {
     /*Просим сервис "blogsService" создать блог.*/
     const createdBlogResult: Result<{ createdBlogId: string }> = await blogsService.create(req.body);
@@ -33,9 +33,9 @@ export const createBlogHandler = async (
     }
 
     /*Если созданный блог был найден, то отправляем его клиенту.*/
-    res.status(createdBlogResultHttpStatus).send(blogResult.data!.blogOutput);
+    return res.status(createdBlogResultHttpStatus).send(blogResult.data!.blogOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

@@ -5,16 +5,20 @@ import { HttpStatuses } from '../../../core/types/http-statuses';
 import { SETTINGS } from '../../../core/settings/settings';
 
 /*Middleware для лимитирования запросов.*/
-export const requestRateLimitGuardMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  /*Получаем IP-адресс пользователя из запроса.*/
+export const requestRateLimitGuardMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void | Response> => {
+  /*Получаем IP-адрес пользователя из запроса.*/
   const ip: string | undefined = req.ip || req.socket.remoteAddress;
-  /*Если IP-адресс пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
+  /*Если IP-адрес пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
   if (!ip) return res.sendStatus(HttpStatuses.Unauthorized_401);
-  /*Если IP-адресс пользователя был найден, то получаем URL, по которому был сделан запрос.*/
+  /*Если IP-адрес пользователя был найден, то получаем URL, по которому был сделан запрос.*/
   const url: string = req.originalUrl || req.url || '/';
 
   /*Просим репозиторий "authRepository" подсчитать количество записей в журнале лимитов запросов за указанный период по
-  IP-адрессу и URL в БД.*/
+  IP-адресу и URL в БД.*/
   const countRequestRateLimitLogs: number = await authRepository.countRequestRateLimitLogsByIPAndUrl(
     ip,
     url,

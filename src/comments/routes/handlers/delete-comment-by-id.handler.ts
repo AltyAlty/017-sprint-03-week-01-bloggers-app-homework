@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { commentsService } from '../../application/comments.service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { DeleteCommentByIdUriInputDTO } from '../input-dto/uri/delete-comment-by-id-uri.input-dto';
@@ -10,12 +10,12 @@ import { DeleteCommentByIdUriInputDTO } from '../input-dto/uri/delete-comment-by
 export const deleteCommentByIdHandler = async (
   req: Request<DeleteCommentByIdUriInputDTO>,
   res: Response<void | ExtensionType[]>
-) => {
+): Promise<void | Response<void | ExtensionType[]>> => {
   try {
     /*Получаем ID комментария.*/
     const commentId: string = req.params.id;
     /*Получаем ID пользователя.*/
-    const userId: string = req.userId?.id as string;
+    const userId: string = req.userId!.id;
     /*Просим сервис "commentsService" удалить комментарий по ID.*/
     const deletedCommentResult: Result<{} | null> = await commentsService.deleteById(commentId, userId);
     /*Получаем HTTP-статус операции по удалению комментария по ID.*/
@@ -27,9 +27,9 @@ export const deleteCommentByIdHandler = async (
     }
 
     /*Если комментарий был удален, то сообщаем об этом клиенту.*/
-    res.sendStatus(deletedCommentResultHttpStatus);
+    return res.sendStatus(deletedCommentResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

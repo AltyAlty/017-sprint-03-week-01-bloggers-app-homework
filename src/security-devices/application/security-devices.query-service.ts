@@ -41,7 +41,7 @@ export const securityDevicesQueryService = {
     отправки клиенту устройства пользователя.*/
     const securityDeviceListOutput: SecurityDeviceListOutputDTO = mapToSecurityDeviceListOutputDTO(securityDevicesDB);
 
-    /*Возвращаем ResultObject c преобразованными устройствами пользователя.*/
+    /*Возвращаем ResultObject с преобразованными устройствами пользователя.*/
     return {
       status: ResultStatuses.Ok,
       data: { securityDeviceListOutput },

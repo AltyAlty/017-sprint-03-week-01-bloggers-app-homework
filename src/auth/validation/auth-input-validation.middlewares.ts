@@ -1,8 +1,8 @@
-import { body } from 'express-validator';
+import { body, ValidationChain } from 'express-validator';
 import { usersRepository } from '../../users/repositories/users.repository';
 import { UserDBType } from '../../users/repositories/types/user-db.type';
 
-const loginOrEmailValidation = body('loginOrEmail')
+const loginOrEmailValidation: ValidationChain = body('loginOrEmail')
   .exists()
   .withMessage('Field "loginOrEmail" is required')
   .isString()
@@ -11,7 +11,7 @@ const loginOrEmailValidation = body('loginOrEmail')
   .notEmpty()
   .withMessage('Field "loginOrEmail" must not be empty');
 
-const passwordValidation = body('password')
+const passwordValidation: ValidationChain = body('password')
   .exists()
   .withMessage('Field "password" is required')
   .isString()
@@ -29,8 +29,8 @@ const passwordValidation = body('password')
 4. Соответствует формату UUID.
 5. Относится к пользователю, который ожидает подтверждения регистрации.
 6. Не относится к пользователю, у которого уже была подтверждена регистрация.
-7. Не имеет истекший срок действия.*/
-export const confirmationCodeValidation = body('code')
+7. Не является просроченным.*/
+export const confirmationCodeValidation: ValidationChain = body('code')
   .exists()
   .withMessage('Field "code" is required')
   .isString()
@@ -60,7 +60,7 @@ export const confirmationCodeValidation = body('code')
 4. Соответствует формату электронной почты.
 5. Относится к пользователю, который ожидает подтверждения регистрации.
 6. Не относится к пользователю, у которого уже была подтверждена регистрация.*/
-export const registrationEmailResendingValidation = body('email')
+export const registrationEmailResendingValidation: ValidationChain = body('email')
   .exists()
   .withMessage('Field "email" is required')
   .isString()

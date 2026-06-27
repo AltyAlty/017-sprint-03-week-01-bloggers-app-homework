@@ -6,7 +6,7 @@ export const nodemailerAdapter = {
   /*Метод для отправки писем.*/
   async sendMail(emailTo: string, subject: string, code: string, template: (code: string) => string): Promise<boolean> {
     try {
-      /*Создаем транспортер - механизм для работы с почтой. В параметрах метода конфигурируем создаваемый транспортер.*/
+      /*Создаем транспортер - механизм для работы с почтой. В параметрах метода настраиваем создаваемый транспортер.*/
       const transporter = nodemailer.createTransport({
         /*Имя почтового сервиса.*/
         service: 'gmail',
@@ -32,10 +32,11 @@ export const nodemailerAdapter = {
         // text: "Did you ever ask for this?"
       });
 
-      // console.log(info);
       return !!info;
     } catch (error) {
-      throw error;
+      console.log('Error while trying to send an email');
+      console.log(error);
+      return false;
     }
   },
 };

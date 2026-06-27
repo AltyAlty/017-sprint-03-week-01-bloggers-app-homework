@@ -49,7 +49,7 @@ export const postsRepository = {
       }
     );
 
-    /*Возвращаем количество измененных постов.*/
+    /*Возвращаем количество постов, попавших под фильтр.*/
     return updateResult.matchedCount;
   },
 

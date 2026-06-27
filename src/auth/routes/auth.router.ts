@@ -49,7 +49,7 @@ authRouter
     inputValidationResultMiddleware,
     confirmUserByCodeHandler
   )
-  /*005. POST-запрос по повторной отправке письма для подтверждения регистрация пользователя.*/
+  /*005. POST-запрос по повторной отправке письма для подтверждения регистрации пользователя.*/
   .post(
     SETTINGS.RESEND_CONFIRMATION_EMAIL_PATH,
     requestRateLimitGuardMiddleware,

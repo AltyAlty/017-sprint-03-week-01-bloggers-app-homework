@@ -20,7 +20,7 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 /*Функция для инициализации документации Swagger. В данном случае UI собираем удаленно, чтобы Swagger работал на
 vercel.com.*/
-export const setupSwagger = (app: Express) => {
+export const setupSwagger = (app: Express): void => {
   app.get('/swagger.json', (_req, res) => res.json(swaggerSpec));
 
   app.use(
@@ -33,6 +33,6 @@ export const setupSwagger = (app: Express) => {
         'https://unpkg.com/swagger-ui-dist@latest/swagger-ui-bundle.js',
         'https://unpkg.com/swagger-ui-dist@latest/swagger-ui-standalone-preset.js',
       ],
-    }),
+    })
   );
 };

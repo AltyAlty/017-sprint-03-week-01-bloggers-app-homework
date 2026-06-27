@@ -64,16 +64,16 @@ export const usersRepository = {
       { $set: { 'emailConfirmation.isConfirmed': true } }
     );
 
-    /*Возвращаем количество измененных пользователей.*/
-    return updateResult.modifiedCount;
+    /*Возвращаем количество пользователей, попавших под фильтр.*/
+    return updateResult.matchedCount;
   },
 
   /*Метод для изменения данных для подтверждения регистрации пользователя по email в БД.*/
   async updateEmailConfirmationByEmail(email: string, emailConfirmation: EmailConfirmationType): Promise<number> {
     /*Просим коллекцию "usersCollection" изменить данные для подтверждения регистрации пользователя по email в БД.*/
     const updateResult: UpdateResult = await db.usersCollection.updateOne({ email }, { $set: { emailConfirmation } });
-    /*Возвращаем количество измененных пользователей.*/
-    return updateResult.modifiedCount;
+    /*Возвращаем количество пользователей, попавших под фильтр.*/
+    return updateResult.matchedCount;
   },
 
   /*Метод для удаления пользователя по ID в БД.*/

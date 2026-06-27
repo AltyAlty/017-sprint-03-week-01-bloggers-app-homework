@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { HttpStatuses } from '../../../core/types/http-statuses';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { authService } from '../../application/auth.service';
 import { RegistrationConfirmationCodeInputDTO } from '../input-dto/registration-confirmation-code.input-dto';
 
@@ -10,7 +10,7 @@ import { RegistrationConfirmationCodeInputDTO } from '../input-dto/registration-
 export const confirmUserByCodeHandler = async (
   req: Request<{}, {}, RegistrationConfirmationCodeInputDTO>,
   res: Response<void | ExtensionType[]>
-) => {
+): Promise<void | Response<void | ExtensionType[]>> => {
   try {
     /*Получаем код подтверждения регистрации пользователя.*/
     const code: string = req.body.code;
@@ -25,9 +25,9 @@ export const confirmUserByCodeHandler = async (
     }
 
     /*Если подтверждение регистрации пользователя по коду прошло успешно, то сообщаем об этом клиенту.*/
-    res.sendStatus(confirmEmailResultHttpStatus);
+    return res.sendStatus(confirmEmailResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

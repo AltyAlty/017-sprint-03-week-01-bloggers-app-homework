@@ -38,11 +38,11 @@ export const blogsRepository = {
       }
     );
 
-    /*Возвращаем количество измененных блогов.*/
+    /*Возвращаем количество блогов, попавших под фильтр.*/
     return updateResult.matchedCount;
   },
 
-  /*Метод "deleteById()" для удаления блога по ID в БД.*/
+  /*Метод для удаления блога по ID в БД.*/
   async deleteById(id: string): Promise<number> {
     /*Просим коллекцию "blogsCollection" удалить блог по ID в БД.*/
     const deleteResult: DeleteResult = await db.blogsCollection.deleteOne({ _id: new ObjectId(id) });

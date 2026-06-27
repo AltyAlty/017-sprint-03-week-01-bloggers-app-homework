@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { UpdateCommentByIdInputDTO } from '../input-dto/update-comment-by-id.input-dto';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { commentsService } from '../../application/comments.service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UpdateCommentByIdUriInputDTO } from '../input-dto/uri/update-comment-by-id-uri.input-dto';
@@ -11,12 +11,12 @@ import { UpdateCommentByIdUriInputDTO } from '../input-dto/uri/update-comment-by
 export const updateCommentByIdHandler = async (
   req: Request<UpdateCommentByIdUriInputDTO, {}, UpdateCommentByIdInputDTO>,
   res: Response<void | ExtensionType[]>
-) => {
+): Promise<void | Response<void | ExtensionType[]>> => {
   try {
     /*Получаем ID комментария.*/
     const commentId: string = req.params.id;
     /*Получаем ID пользователя.*/
-    const userId: string = req.userId?.id as string;
+    const userId: string = req.userId!.id;
     /*Просим сервис "commentsService" изменить комментарий по ID.*/
     const updatedCommentResult: Result<{} | null> = await commentsService.updateById(commentId, req.body, userId);
     /*Получаем HTTP-статус операции по изменению комментария по ID.*/
@@ -28,9 +28,9 @@ export const updateCommentByIdHandler = async (
     }
 
     /*Если комментарий был изменен, то сообщаем об этом клиенту.*/
-    res.sendStatus(updatedCommentResultHttpStatus);
+    return res.sendStatus(updatedCommentResultHttpStatus);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

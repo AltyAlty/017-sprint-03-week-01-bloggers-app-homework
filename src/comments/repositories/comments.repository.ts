@@ -52,7 +52,7 @@ export const commentsRepository = {
     return deleteResult.deletedCount;
   },
 
-  /*Метод для удаления комментариев ID пользователя в БД.*/
+  /*Метод для удаления комментариев по ID пользователя в БД.*/
   async deleteAllByUserId(userId: string): Promise<number> {
     /*Просим коллекцию "commentsCollection" удалить комментарии по ID пользователя в БД.*/
     const deleteResult: DeleteResult = await db.commentsCollection.deleteMany({ 'commentatorInfo.userId': userId });

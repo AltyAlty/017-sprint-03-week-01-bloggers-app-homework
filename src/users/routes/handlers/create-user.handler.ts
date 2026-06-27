@@ -4,7 +4,7 @@ import { errorsHandler } from '../../../core/errors/errors.handler';
 import { CreateUserInputDTO } from '../input-dto/create-user.input-dto';
 import { usersService } from '../../application/users.service';
 import { usersQueryService } from '../../application/users.query-service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UserOutputDTO } from '../output-dto/user.output-dto';
 
@@ -12,7 +12,7 @@ import { UserOutputDTO } from '../output-dto/user.output-dto';
 export const createUserHandler = async (
   req: Request<{}, {}, CreateUserInputDTO>,
   res: Response<UserOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<UserOutputDTO | ExtensionType[]>> => {
   try {
     /*Просим сервис "usersService" создать пользователя.*/
     const createdUserResult: Result<{ createdUserId: string }> = await usersService.create(req.body);
@@ -33,9 +33,9 @@ export const createUserHandler = async (
     }
 
     /*Если созданный пользователь был найден, то отправляем его клиенту.*/
-    res.status(createdUserResultHttpStatus).send(userResult.data!.userOutput);
+    return res.status(createdUserResultHttpStatus).send(userResult.data!.userOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { CreateCommentForPostInputDTO } from '../../../comments/routes/input-dto/create-comment-for-post.input-dto';
 import { errorsHandler } from '../../../core/errors/errors.handler';
 import { commentsService } from '../../../comments/application/comments.service';
-import { mapResultCodeToHttpStatus } from '../../../core/utils/result/map-result-code-to-http-status';
+import { mapResultCodeToHttpStatus } from '../../../core/utils/result/mappers/map-result-code-to-http-status';
 import { HttpStatuses } from '../../../core/types/http-statuses';
 import { commentsQueryService } from '../../../comments/application/comments.query-service';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
@@ -13,12 +13,12 @@ import { CreateCommentForPostUriInputDTO } from '../../../comments/routes/input-
 export const createCommentForPostHandler = async (
   req: Request<CreateCommentForPostUriInputDTO, {}, CreateCommentForPostInputDTO>,
   res: Response<CommentOutputDTO | ExtensionType[]>
-) => {
+): Promise<void | Response<CommentOutputDTO | ExtensionType[]>> => {
   try {
     /*Получаем ID поста.*/
     const postId: string = req.params.postId;
     /*Получаем ID пользователя.*/
-    const userId: string = req.userId!.id as string;
+    const userId: string = req.userId!.id;
 
     /*Просим сервис "commentsService" создать комментарий в посте.*/
     const createdCommentResult: Result<{ createdCommentId: string } | null> = await commentsService.createInPost(
@@ -50,9 +50,9 @@ export const createCommentForPostHandler = async (
     }
 
     /*Если созданный комментарий был найден, то отправляем его клиенту.*/
-    res.status(createdCommentResultHttpStatus).send(commentResult.data!.commentOutput);
+    return res.status(createdCommentResultHttpStatus).send(commentResult.data!.commentOutput);
   } catch (error: unknown) {
     /*Если была перехвачена ошибка, то обрабатываем ее.*/
-    errorsHandler(error, res);
+    return errorsHandler(error, res);
   }
 };
