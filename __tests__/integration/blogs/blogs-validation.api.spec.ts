@@ -8,7 +8,7 @@ import { getBlogList } from '../../utils/blogs/get-blog-list.test-util';
 import { getPostListByBlogId } from '../../utils/blogs/get-post-list-by-blog-id.test-util';
 import { PaginatedPostListOutputDTO } from '../../../src/posts/routes/output-dto/paginated-post-list.output-dto';
 import { PaginatedBlogListOutputDTO } from '../../../src/blogs/routes/output-dto/paginated-blog-list.output-dto';
-import { createPostInBlog } from '../../utils/blogs/create-post-in-blog.test-util';
+import { createPostForBlog } from '../../utils/blogs/create-post-for-blog.test-util';
 import { updateBlogById } from '../../utils/blogs/update-blog-by-id.test-util';
 import { deleteBlogById } from '../../utils/blogs/delete-blog-by-id.test-util';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
@@ -27,13 +27,14 @@ import {
   invalidPostTitles,
   validPostsPaginationSettings,
 } from '../../test-data/posts.test-data';
+import { invalidBasicAuthTokens } from '../../test-data/auth.test-data';
 
 describe('Blogs API validation', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it('❌ 001 should not create a blog without proper basic authorization; POST /api/blogs', async () => {
-    await createBlog(app, undefined, HttpStatuses.Unauthorized_401, 'token');
+  it('❌ 001 should not create a blog without proper basic authorization; 002. POST /api/blogs', async () => {
+    await createBlog(app, undefined, HttpStatuses.Unauthorized_401, invalidBasicAuthTokens.BAT_01);
 
     const getBlogListResponse: PaginatedBlogListOutputDTO = await getBlogList(app);
     expect(getBlogListResponse.items).toBeInstanceOf(Array);
@@ -41,7 +42,7 @@ describe('Blogs API validation', () => {
     expect(getBlogListResponse.totalCount).toBe(0);
   });
 
-  it('❌ 002 should not create a blog when an invalid body passed; POST /api/blogs', async () => {
+  it('❌ 002 should not create a blog when an invalid body passed; 002. POST /api/blogs', async () => {
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
     const createBlogResponse_01: any = await createBlog(app, { name: invalidBlogNames.name_01 }, testStatus);
@@ -119,7 +120,7 @@ describe('Blogs API validation', () => {
     expect(createBlogResponse_11.errorsMessages[0].message).toBe('Field "websiteUrl" must be a string');
   });
 
-  it('❌ 003 should not return a blog by invalid ID; GET /api/blogs/:id', async () => {
+  it('❌ 003 should not return a blog by invalid ID; 005. GET /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -138,7 +139,7 @@ describe('Blogs API validation', () => {
     expect(getBlogByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 004 should not return a list of blogs when invalid pagination settings passed; GET /api/blogs', async () => {
+  it('❌ 004 should not return a list of blogs when invalid pagination settings passed; 001. GET /api/blogs', async () => {
     const validUrl: string = `${SETTINGS.BLOGS_PATH}?pageSize=${validBlogsPaginationSettings.pageSize}&pageNumber=${validBlogsPaginationSettings.pageNumber}&sortDirection=${validBlogsPaginationSettings.sortDirection}&sortBy=${validBlogsPaginationSettings.sortBy}`;
     const invalidUrl_01: string = `${SETTINGS.BLOGS_PATH}?pageSize=${invalidBlogsPaginationSettings.pageSize}&pageNumber=${validBlogsPaginationSettings.pageNumber}&sortDirection=${validBlogsPaginationSettings.sortDirection}&sortBy=${validBlogsPaginationSettings.sortBy}`;
     const invalidUrl_02: string = `${SETTINGS.BLOGS_PATH}?pageSize=${validBlogsPaginationSettings.pageSize}&pageNumber=${invalidBlogsPaginationSettings.pageNumber}&sortDirection=${validBlogsPaginationSettings.sortDirection}&sortBy=${validBlogsPaginationSettings.sortBy}`;
@@ -173,17 +174,17 @@ describe('Blogs API validation', () => {
     );
   });
 
-  it('❌ 005 should not update a blog by ID without proper basic authorization; PUT /api/blogs/:id', async () => {
+  it('❌ 005 should not update a blog by ID without proper basic authorization; 006. PUT /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
-    await updateBlogById(app, createdBlogId, undefined, HttpStatuses.Unauthorized_401, 'token');
+    await updateBlogById(app, createdBlogId, undefined, HttpStatuses.Unauthorized_401, invalidBasicAuthTokens.BAT_01);
 
     const getBlogByIdResponse: BlogOutputDTO = await getBlogById(app, createdBlogId);
     expect(getBlogByIdResponse).toEqual(createdBlog);
   });
 
-  it('❌ 006 should not update a blog by invalid ID; PUT /api/blogs/:id', async () => {
+  it('❌ 006 should not update a blog by invalid ID; 006. PUT /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -202,7 +203,7 @@ describe('Blogs API validation', () => {
     expect(updateBlogByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 007 should not update a blog by ID when an invalid body passed; PUT /api/blogs/:id', async () => {
+  it('❌ 007 should not update a blog by ID when an invalid body passed; 006. PUT /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -314,17 +315,17 @@ describe('Blogs API validation', () => {
     expect(updateBlogByIdResponse_11.errorsMessages[0].message).toBe('Field "websiteUrl" must be a string');
   });
 
-  it('❌ 008 should not delete a blog by ID without proper basic authorization; DELETE /api/blogs/:id', async () => {
+  it('❌ 008 should not delete a blog by ID without proper basic authorization; 007. DELETE /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
-    await deleteBlogById(app, createdBlogId, HttpStatuses.Unauthorized_401, 'token');
+    await deleteBlogById(app, createdBlogId, HttpStatuses.Unauthorized_401, invalidBasicAuthTokens.BAT_01);
 
     const getBlogByIdResponse: BlogOutputDTO = await getBlogById(app, createdBlogId);
     expect(getBlogByIdResponse).toEqual(createdBlog);
   });
 
-  it('❌ 009 should not delete a blog by invalid ID; DELETE /api/blogs/:id', async () => {
+  it('❌ 009 should not delete a blog by invalid ID; 007. DELETE /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -343,11 +344,17 @@ describe('Blogs API validation', () => {
     expect(deleteBlogByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 010 should not create a post for a blog by ID without proper basic authorization; POST /api/blogs/:blogId/posts', async () => {
+  it('❌ 010 should not create a post for a blog by ID without proper basic authorization; 004. POST /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
-    await createPostInBlog(app, createdBlogId, undefined, HttpStatuses.Unauthorized_401, 'token');
+    await createPostForBlog(
+      app,
+      createdBlogId,
+      undefined,
+      HttpStatuses.Unauthorized_401,
+      invalidBasicAuthTokens.BAT_01
+    );
 
     const getPostListByBlogIdResponse: PaginatedPostListOutputDTO = await getPostListByBlogId(app, createdBlogId);
     expect(getPostListByBlogIdResponse.items).toBeInstanceOf(Array);
@@ -355,15 +362,15 @@ describe('Blogs API validation', () => {
     expect(getPostListByBlogIdResponse.totalCount).toBe(0);
   });
 
-  it('❌ 011 should not create a post for a blog by invalid ID; POST /api/blogs/:blogId/posts', async () => {
+  it('❌ 011 should not create a post for a blog by invalid ID; 004. POST /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
-    const createPostInBlogResponse_01: any = await createPostInBlog(app, invalidBlogIds.id_01, undefined, testStatus);
-    const createPostInBlogResponse_02: any = await createPostInBlog(app, invalidBlogIds.id_02, undefined, testStatus);
-    const createPostInBlogResponse_03: any = await createPostInBlog(app, invalidBlogIds.id_03, undefined, testStatus);
-    const createPostInBlogResponse_04: any = await createPostInBlog(app, invalidBlogIds.id_04, undefined, testStatus);
+    const createPostInBlogResponse_01: any = await createPostForBlog(app, invalidBlogIds.id_01, undefined, testStatus);
+    const createPostInBlogResponse_02: any = await createPostForBlog(app, invalidBlogIds.id_02, undefined, testStatus);
+    const createPostInBlogResponse_03: any = await createPostForBlog(app, invalidBlogIds.id_03, undefined, testStatus);
+    const createPostInBlogResponse_04: any = await createPostForBlog(app, invalidBlogIds.id_04, undefined, testStatus);
 
     const getPostListByBlogIdResponse: PaginatedPostListOutputDTO = await getPostListByBlogId(app, createdBlogId);
     expect(getPostListByBlogIdResponse.items).toBeInstanceOf(Array);
@@ -379,82 +386,82 @@ describe('Blogs API validation', () => {
     expect(createPostInBlogResponse_04.errorsMessages[0].message).toBe('Field "blogId" must not be empty');
   });
 
-  it('❌ 012 should not create a post for a blog by ID when an invalid body passed; POST /api/blogs/:blogId/posts', async () => {
+  it('❌ 012 should not create a post for a blog by ID when an invalid body passed; 004. POST /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
-    const createPostInBlogResponse_01: any = await createPostInBlog(
+    const createPostInBlogResponse_01: any = await createPostForBlog(
       app,
       createdBlogId,
       { title: invalidPostTitles.title_01 },
       testStatus
     );
 
-    const createPostInBlogResponse_02: any = await createPostInBlog(
+    const createPostInBlogResponse_02: any = await createPostForBlog(
       app,
       createdBlogId,
       { title: invalidPostTitles.title_02 },
       testStatus
     );
 
-    const createPostInBlogResponse_03: any = await createPostInBlog(
+    const createPostInBlogResponse_03: any = await createPostForBlog(
       app,
       createdBlogId,
       { title: invalidPostTitles.title_03 },
       testStatus
     );
 
-    const createPostInBlogResponse_04: any = await createPostInBlog(
+    const createPostInBlogResponse_04: any = await createPostForBlog(
       app,
       createdBlogId,
       { title: invalidPostTitles.title_04 },
       testStatus
     );
 
-    const createPostInBlogResponse_05: any = await createPostInBlog(
+    const createPostInBlogResponse_05: any = await createPostForBlog(
       app,
       createdBlogId,
       { title: invalidPostTitles.title_05 },
       testStatus
     );
 
-    const createPostInBlogResponse_06: any = await createPostInBlog(
+    const createPostInBlogResponse_06: any = await createPostForBlog(
       app,
       createdBlogId,
       { shortDescription: invalidPostShortDescriptions.shortDescription_01 },
       testStatus
     );
 
-    const createPostInBlogResponse_07: any = await createPostInBlog(
+    const createPostInBlogResponse_07: any = await createPostForBlog(
       app,
       createdBlogId,
       { shortDescription: invalidPostShortDescriptions.shortDescription_02 },
       testStatus
     );
 
-    const createPostInBlogResponse_08: any = await createPostInBlog(
+    const createPostInBlogResponse_08: any = await createPostForBlog(
       app,
       createdBlogId,
       { shortDescription: invalidPostShortDescriptions.shortDescription_03 },
       testStatus
     );
 
-    const createPostInBlogResponse_09: any = await createPostInBlog(
+    const createPostInBlogResponse_09: any = await createPostForBlog(
       app,
       createdBlogId,
       { content: invalidPostContents.content_01 },
       testStatus
     );
 
-    const createPostInBlogResponse_10: any = await createPostInBlog(
+    const createPostInBlogResponse_10: any = await createPostForBlog(
       app,
       createdBlogId,
       { content: invalidPostContents.content_02 },
       testStatus
     );
 
-    const createPostInBlogResponse_11: any = await createPostInBlog(
+    const createPostInBlogResponse_11: any = await createPostForBlog(
       app,
       createdBlogId,
       { content: invalidPostContents.content_03 },
@@ -501,10 +508,10 @@ describe('Blogs API validation', () => {
     expect(createPostInBlogResponse_11.errorsMessages[0].message).toBe('Field "content" must be a string');
   });
 
-  it('❌ 013 should not return a list of posts for a blog by invalid ID; GET /api/blogs/:blogId/posts', async () => {
+  it('❌ 013 should not return a list of posts for a blog by invalid ID; 003. GET /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
-    await Promise.all([createPostInBlog(app, createdBlogId), createPostInBlog(app, createdBlogId)]);
+    await Promise.all([createPostForBlog(app, createdBlogId), createPostForBlog(app, createdBlogId)]);
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
     const getPostListByBlogIdResponse_01: any = await getPostListByBlogId(
@@ -549,7 +556,7 @@ describe('Blogs API validation', () => {
     expect(getPostListByBlogIdResponse_04.errorsMessages[0].message).toBe('Field "blogId" must not be empty');
   });
 
-  it('❌ 014 should not return a list of posts for a blog by ID when invalid pagination settings passed; GET /api/blogs/:blogId/posts', async () => {
+  it('❌ 014 should not return a list of posts for a blog by ID when invalid pagination settings passed; 003. GET /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const validUrl: string = `${SETTINGS.BLOGS_PATH}/${createdBlogId}/posts?pageSize=${validPostsPaginationSettings.pageSize}&pageNumber=${validPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
@@ -560,12 +567,12 @@ describe('Blogs API validation', () => {
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
     await Promise.all([
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
     ]);
 
     const getPostListByBlogIdResponse_01: any = await getPostListByBlogId(

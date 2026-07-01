@@ -40,7 +40,7 @@ export const authRepository = {
   },
 
   /*Метод для подсчета количества записей в журнале лимитов запросов за указанный период по IP-адресу и URL в БД.*/
-  async countRequestRateLimitLogsByIPAndUrl(ip: string, url: string, seconds: number): Promise<number> {
+  async countRequestRateLimitLogsByIpAndUrl(ip: string, url: string, seconds: number): Promise<number> {
     /*Просим коллекцию "requestRateLimitLogsCollection" подсчитать количество записей в журнале лимитов запросов за
     указанный период по IP-адресу и URL в БД.*/
     return db.requestRateLimitLogsCollection.countDocuments({
@@ -85,10 +85,10 @@ export const authRepository = {
   },
 
   /*Метод для изменения сессии по дате создания RT в БД.*/
-  async updateSessionByIAT(currentIAT: Date, iat: Date, exp: Date, ip: string): Promise<number> {
+  async updateSessionByIat(currentIat: Date, iat: Date, exp: Date, ip: string): Promise<number> {
     /*Просим коллекцию "sessionsCollection" изменить сессию по дате создания RT в БД.*/
     const updateResult: UpdateResult<SessionType> = await db.sessionsCollection.updateOne(
-      { iat: currentIAT },
+      { iat: currentIat },
       { $set: { iat, exp, ip } }
     );
 
@@ -97,7 +97,7 @@ export const authRepository = {
   },
 
   /*Метод для удаления сессии по дате создания RT в БД.*/
-  async deleteSessionByIAT(iat: Date): Promise<number> {
+  async deleteSessionByIat(iat: Date): Promise<number> {
     /*Просим коллекцию "sessionsCollection" удалить сессию по дате создания RT в БД.*/
     const deleteResult: DeleteResult = await db.sessionsCollection.deleteOne({ iat });
     /*Возвращаем количество удаленных сессий.*/

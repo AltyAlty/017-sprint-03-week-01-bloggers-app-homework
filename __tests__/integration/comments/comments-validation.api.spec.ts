@@ -4,24 +4,24 @@ import { createPost } from '../../utils/posts/create-post.test-util';
 import { createUser } from '../../utils/users/create-user.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
 import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/comment.output-dto';
-import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
+import { createCommentForPost } from '../../utils/posts/create-comment-for-post.test-util';
 import { getCommentById } from '../../utils/comments/get-comment-by-id.test-util';
 import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import { UpdateCommentByIdInputDTO } from '../../../src/comments/routes/input-dto/update-comment-by-id.input-dto';
 import { updateCommentById } from '../../utils/comments/update-comment-by-id.test-util';
-import { getUpdateCommentInputDTO } from '../../utils/comments/get-update-comment-input-dto.test-util';
+import { getUpdateCommentInputDTO } from '../../utils/comments/input-dto-utils/get-update-comment-input-dto.test-util';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
-import { getCreateUserInputDTO } from '../../utils/users/get-create-user-input-dto.test-util';
+import { getCreateUserInputDTO } from '../../utils/users/input-dto-utils/get-create-user-input-dto.test-util';
 import { deleteCommentById } from '../../utils/comments/delete-comment-by-id.test-util';
 import { invalidAccessTokens } from '../../test-data/auth.test-data';
 import { invalidCommentContents, invalidCommentIds } from '../../test-data/comments.test-data';
 
-describe('Comments API', () => {
+describe('Comments API Validation', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it("❌ 001 should not return a comment by invalid ID; GET /api/comments/:id'", async () => {
+  it("❌ 001 should not return a comment by invalid ID; 003. GET /api/comments/:id'", async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -32,7 +32,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
@@ -50,7 +50,7 @@ describe('Comments API', () => {
     expect(getCommentByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 002 should not update a comment by ID without a valid access token; PUT /api/comments/:id', async () => {
+  it('❌ 002 should not update a comment by ID when an invalid access token passed; 001. PUT /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const updateCommentData: UpdateCommentByIdInputDTO = getUpdateCommentInputDTO();
@@ -62,7 +62,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.Unauthorized_401;
 
@@ -74,12 +74,13 @@ describe('Comments API', () => {
     await updateCommentById(app, createdCommentId, invalidAccessTokens.AT_06, updateCommentData, testStatus);
     await updateCommentById(app, createdCommentId, invalidAccessTokens.AT_07, updateCommentData, testStatus);
     await updateCommentById(app, createdCommentId, invalidAccessTokens.AT_08, updateCommentData, testStatus);
+    await updateCommentById(app, createdCommentId, invalidAccessTokens.AT_09, updateCommentData, testStatus);
 
     const getCommentByIdResponse: CommentOutputDTO = await getCommentById(app, createdCommentId);
     expect(getCommentByIdResponse).toEqual(createdComment);
   });
 
-  it('❌ 003 should not update a comment by invalid ID; PUT /api/comments/:id', async () => {
+  it('❌ 003 should not update a comment by invalid ID; 001. PUT /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const updateCommentData: UpdateCommentByIdInputDTO = getUpdateCommentInputDTO();
@@ -91,7 +92,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
@@ -129,7 +130,7 @@ describe('Comments API', () => {
     expect(updateCommentByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 004 should not update a comment by ID when an invalid body passed; PUT /api/comments/:id', async () => {
+  it('❌ 004 should not update a comment by ID when an invalid body passed; 001. PUT /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -140,7 +141,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
@@ -260,7 +261,7 @@ describe('Comments API', () => {
     expect(updateCommentByIdResponse_10.errorsMessages[0].message).toBe('Field "content" must be a string');
   });
 
-  it('❌ 005 should not delete a comment by ID without a valid access token; DELETE /api/comments/:id', async () => {
+  it('❌ 005 should not delete a comment by ID when an invalid access token passed; 002. DELETE /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -271,7 +272,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.Unauthorized_401;
 
@@ -283,12 +284,13 @@ describe('Comments API', () => {
     await deleteCommentById(app, createdCommentId, invalidAccessTokens.AT_06, testStatus);
     await deleteCommentById(app, createdCommentId, invalidAccessTokens.AT_07, testStatus);
     await deleteCommentById(app, createdCommentId, invalidAccessTokens.AT_08, testStatus);
+    await deleteCommentById(app, createdCommentId, invalidAccessTokens.AT_09, testStatus);
 
     const getCommentByIdResponse: CommentOutputDTO = await getCommentById(app, createdCommentId);
     expect(getCommentByIdResponse).toEqual(createdComment);
   });
 
-  it('❌ 006 should not delete a comment by invalid ID; DELETE /api/comments/:id', async () => {
+  it('❌ 006 should not delete a comment by invalid ID; 002. DELETE /api/comments/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -299,7 +301,7 @@ describe('Comments API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId: string = createdComment.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 

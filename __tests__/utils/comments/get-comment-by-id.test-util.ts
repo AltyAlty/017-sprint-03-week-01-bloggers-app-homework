@@ -9,7 +9,7 @@ export const getCommentById = async (
   commentId: string | any,
   expectedStatus?: HttpStatuses
 ): Promise<CommentOutputDTO> => {
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
   const getCommentByIdResponse = await request(app).get(`${SETTINGS.COMMENTS_PATH}/${commentId}`).expect(testStatus);
   return getCommentByIdResponse.body;
 };

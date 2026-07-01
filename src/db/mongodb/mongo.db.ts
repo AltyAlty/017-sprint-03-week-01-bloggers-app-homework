@@ -54,7 +54,7 @@ export const db = {
 
       await this.requestRateLimitLogsCollection.createIndex(
         { timestamp: 1 },
-        { expireAfterSeconds: SETTINGS.REQUEST_RATE_LIMIT_LOG_EXPIRATION_TIME_IN_SECONDS }
+        { expireAfterSeconds: Number(SETTINGS.REQUEST_RATE_LIMIT_LOG_EXPIRATION_TIME_IN_SECONDS) }
       );
 
       /*Используем составной индекс, чтобы ускорить работу метода "countDocuments()".*/

@@ -9,7 +9,7 @@ export const getBlogById = async (
   blogId: string | any,
   expectedStatus?: HttpStatuses
 ): Promise<BlogOutputDTO> => {
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
   const getBlogByIdResponse = await request(app).get(`${SETTINGS.BLOGS_PATH}/${blogId}`).expect(testStatus);
   return getBlogByIdResponse.body;
 };

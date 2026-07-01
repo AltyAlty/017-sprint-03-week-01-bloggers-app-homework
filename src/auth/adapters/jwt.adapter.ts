@@ -31,8 +31,6 @@ export const jwtAdapter = {
     return new Promise(resolve => {
       const onVerifyComplete = (error: Error | null, decoded: unknown): void => {
         if (error) {
-          // console.log('Access token verification error');
-          // console.log(error);
           resolve(null);
         } else resolve(decoded as { userId: string });
       };
@@ -46,14 +44,31 @@ export const jwtAdapter = {
     return new Promise(resolve => {
       const onVerifyComplete = (error: Error | null, decoded: unknown): void => {
         if (error) {
-          // console.log('Refresh token verification error');
-          // console.log(error);
           resolve(null);
         } else resolve(decoded as { userId: string; deviceId: string });
       };
 
       jwt.verify(token, secret, onVerifyComplete);
     });
+  },
+
+  /*Метод для декодирования AT.*/
+  async decodeAccessToken(token: string): Promise<{ userId: string; iat: number; exp: number } | null> {
+    try {
+      const payload: jwt.JwtPayload | string | null = jwt.decode(token);
+      if (!payload || typeof payload === 'string') return null;
+      if (!payload.userId || typeof payload.userId !== 'string') return null;
+      if (!payload.iat || typeof payload.iat !== 'number') return null;
+      if (!payload.exp || typeof payload.exp !== 'number') return null;
+
+      return {
+        userId: payload.userId,
+        iat: payload.iat,
+        exp: payload.exp,
+      };
+    } catch (error) {
+      return null;
+    }
   },
 
   /*Метод для декодирования RT.*/
@@ -75,8 +90,6 @@ export const jwtAdapter = {
         exp: payload.exp,
       };
     } catch (error) {
-      // console.log('Refresh token decoding error');
-      // console.log(error);
       return null;
     }
   },
@@ -96,8 +109,6 @@ export const jwtAdapter = {
     try {
       return jwt.verify(token, secret) as { userId: string };
     } catch (error) {
-      // console.error('Access token verification error');
-      // console.log(error);
       return null;
     }
   },
@@ -107,8 +118,6 @@ export const jwtAdapter = {
     try {
       return jwt.verify(token, secret) as { userId: string; deviceId: string };
     } catch (error) {
-      // console.error('Refresh token verification error');
-      // console.log(error);
       return null;
     }
   },

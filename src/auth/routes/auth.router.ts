@@ -7,7 +7,7 @@ import {
 } from '../validation/auth-input-validation.middlewares';
 import { inputValidationResultMiddleware } from '../../core/middlewares/validation/input-validation-result.middleware';
 import { accessTokenGuardMiddleware } from '../middlewares/guard-middlewares/access-token.guard-middleware';
-import { getAuthDataByTokenHandler } from './handlers/get-auth-data-by-token.handler';
+import { getAuthDataByAccessTokenHandler } from './handlers/get-auth-data-by-access-token.handler';
 import { userCreateInputValidation } from '../../users/validation/users-input-validation.middlewares';
 import { registerUserHandler } from './handlers/register-user.handler';
 import { confirmUserByCodeHandler } from './handlers/confirm-user-by-code.handler';
@@ -31,8 +31,8 @@ authRouter
     inputValidationResultMiddleware,
     authByLoginOrEmailHandler
   )
-  /*002. GET-запрос по получению данных пользователя по токену.*/
-  .get(SETTINGS.GET_AUTH_DATA_BY_TOKEN_PATH, accessTokenGuardMiddleware, getAuthDataByTokenHandler)
+  /*002. GET-запрос по получению данных пользователя по AT.*/
+  .get(SETTINGS.GET_AUTH_DATA_BY_TOKEN_PATH, accessTokenGuardMiddleware, getAuthDataByAccessTokenHandler)
   /*003. POST-запрос по регистрации пользователя.*/
   .post(
     SETTINGS.REGISTER_USER_PATH,

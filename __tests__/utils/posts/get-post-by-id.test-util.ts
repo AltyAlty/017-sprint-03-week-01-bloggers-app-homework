@@ -9,7 +9,7 @@ export const getPostById = async (
   postId: string | any,
   expectedStatus?: HttpStatuses
 ): Promise<PostOutputDTO> => {
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
   const getPostByIdResponse = await request(app).get(`${SETTINGS.POSTS_PATH}/${postId}`).expect(testStatus);
   return getPostByIdResponse.body;
 };

@@ -6,16 +6,16 @@ import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-
 import { getPostById } from '../../utils/posts/get-post-by-id.test-util';
 import { UpdatePostByIdInputDTO } from '../../../src/posts/routes/input-dto/update-post-by-id.input-dto';
 import { updatePostById } from '../../utils/posts/update-post-by-id.test-util';
-import { getUpdatePostInputDTO } from '../../utils/posts/get-update-post-input-dto.test-util';
+import { getUpdatePostInputDTO } from '../../utils/posts/input-dto-utils/get-update-post-input-dto.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
-import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
+import { createCommentForPost } from '../../utils/posts/create-comment-for-post.test-util';
 import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/comment.output-dto';
 import { createUser } from '../../utils/users/create-user.test-util';
 import { getPostList } from '../../utils/posts/get-post-list.test-util';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
 import { PaginatedPostListOutputDTO } from '../../../src/posts/routes/output-dto/paginated-post-list.output-dto';
 import { deletePostById } from '../../utils/posts/delete-post-by-id.test-util';
-import { getCreateUserInputDTO } from '../../utils/users/get-create-user-input-dto.test-util';
+import { getCreateUserInputDTO } from '../../utils/users/input-dto-utils/get-create-user-input-dto.test-util';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
 import { getCommentById } from '../../utils/comments/get-comment-by-id.test-util';
 import { getCommentListByPostId } from '../../utils/posts/get-comment-list-by-post-id.test-util';
@@ -28,7 +28,7 @@ describe('Posts API', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it('✅ 001 should create a post; POST /api/posts', async () => {
+  it('✅ 001 should create a post; 004. POST /api/posts', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
 
     const createdPostId: string = createdPost.id;
@@ -36,7 +36,7 @@ describe('Posts API', () => {
     expect(getPostByIdResponse).toEqual(createdPost);
   });
 
-  it('✅ 002 should return a post by ID; GET /api/posts/:id', async () => {
+  it('✅ 002 should return a post by ID; 005. GET /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
 
@@ -45,7 +45,7 @@ describe('Posts API', () => {
     expect(getPostByIdResponse).toEqual(createdPost);
   });
 
-  it('✅ 003 should return a list of posts; GET /api/posts', async () => {
+  it('✅ 003 should return a list of posts; 003. GET /api/posts', async () => {
     await Promise.all([createPost(app), createPost(app)]);
 
     const getPostListResponse: PaginatedPostListOutputDTO = await getPostList(app);
@@ -55,7 +55,7 @@ describe('Posts API', () => {
     expect(getPostListResponse.totalCount).toBe(2);
   });
 
-  it('✅ 004 should return a list of posts when valid pagination settings passed; GET /api/posts', async () => {
+  it('✅ 004 should return a list of posts when valid pagination settings passed; 003. GET /api/posts', async () => {
     const url: string = `${SETTINGS.POSTS_PATH}?pageSize=${validPostsPaginationSettings.pageSize}&pageNumber=${validPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
 
     await Promise.all([
@@ -74,7 +74,7 @@ describe('Posts API', () => {
     expect(getPostListResponse.totalCount).toBe(6);
   });
 
-  it('✅ 005 should update a post by ID; PUT /api/posts/:id', async () => {
+  it('✅ 005 should update a post by ID; 006. PUT /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createdPostBlogId: string = createdPost.blogId;
@@ -95,7 +95,7 @@ describe('Posts API', () => {
     });
   });
 
-  it('✅ 006 should delete a post by ID; DELETE /api/posts/:id', async () => {
+  it('✅ 006 should delete a post by ID; 007. DELETE /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
 
@@ -104,7 +104,7 @@ describe('Posts API', () => {
     await getPostById(app, createdPostId, HttpStatuses.NotFound_404);
   });
 
-  it('✅ 007 should delete a post with its comments by ID; DELETE /api/posts/:id', async () => {
+  it('✅ 007 should delete a post with its comments by ID; 007. DELETE /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -115,8 +115,8 @@ describe('Posts API', () => {
       password: createUserData.password,
     });
 
-    const createdComment_01: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
-    const createdComment_02: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment_01: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
+    const createdComment_02: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId_01: string = createdComment_01.id;
     const createdCommentId_02: string = createdComment_02.id;
     const testStatus: HttpStatuses = HttpStatuses.NotFound_404;
@@ -129,7 +129,7 @@ describe('Posts API', () => {
     await getCommentById(app, createdCommentId_02, testStatus);
   });
 
-  it('✅ 008 should create a comment for a post by ID; POST /api/posts/:postId/comments', async () => {
+  it('✅ 008 should create a comment for a post by ID; 002. POST /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -140,7 +140,7 @@ describe('Posts API', () => {
       password: createUserData.password,
     });
 
-    const createdComment: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
 
     const createdCommentId: string = createdComment.id;
     const getCommentByIdResponse: CommentOutputDTO = await getCommentById(app, createdCommentId);
@@ -149,7 +149,7 @@ describe('Posts API', () => {
     expect(getCommentByIdResponse.commentatorInfo.userLogin).toBe(createdUser.login);
   });
 
-  it('✅ 009 should return a list of comments for a post by ID; GET /api/posts/:postId/comments', async () => {
+  it('✅ 009 should return a list of comments for a post by ID; 001. GET /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -161,8 +161,8 @@ describe('Posts API', () => {
     });
 
     await Promise.all([
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
     ]);
 
     const getCommentListByPostIdResponse: PaginatedCommentListOutputDTO = await getCommentListByPostId(
@@ -175,7 +175,7 @@ describe('Posts API', () => {
     expect(getCommentListByPostIdResponse.totalCount).toBe(2);
   });
 
-  it('✅ 010 should return a list of comments for a post by ID when valid pagination settings passed; GET /api/posts/:postId/comments', async () => {
+  it('✅ 010 should return a list of comments for a post by ID when valid pagination settings passed; 001. GET /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const url: string = `${SETTINGS.POSTS_PATH}/${createdPostId}/comments?pageSize=${validCommentsPaginationSettings.pageSize}&pageNumber=${validCommentsPaginationSettings.pageNumber}&sortDirection=${validCommentsPaginationSettings.sortDirection}&sortBy=${validCommentsPaginationSettings.sortBy}`;
@@ -188,12 +188,12 @@ describe('Posts API', () => {
     });
 
     await Promise.all([
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
     ]);
 
     const getCommentListByPostIdResponse: PaginatedCommentListOutputDTO = await getCommentListByPostId(

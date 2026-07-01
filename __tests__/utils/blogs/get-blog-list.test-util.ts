@@ -9,8 +9,8 @@ export const getBlogList = async (
   urlWithPagination?: string,
   expectedStatus?: HttpStatuses
 ): Promise<PaginatedBlogListOutputDTO> => {
-  const url = urlWithPagination ?? `${SETTINGS.BLOGS_PATH}${SETTINGS.GET_BLOG_LIST_PATH}`;
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const url: string = urlWithPagination ?? `${SETTINGS.BLOGS_PATH}${SETTINGS.GET_BLOG_LIST_PATH}`;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
   const getBlogListResponse = await request(app).get(url).expect(testStatus);
   return getBlogListResponse.body;
 };

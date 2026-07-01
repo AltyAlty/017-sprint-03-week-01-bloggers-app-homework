@@ -6,33 +6,33 @@ import { getBlogById } from '../../utils/blogs/get-blog-by-id.test-util';
 import { UpdateBlogByIdInputDTO } from '../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
 import { updateBlogById } from '../../utils/blogs/update-blog-by-id.test-util';
 import { BlogOutputDTO } from '../../../src/blogs/routes/output-dto/blog.output-dto';
-import { getUpdateBlogInputDTO } from '../../utils/blogs/get-update-blog-input-dto.test-util';
 import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-dto';
 import { getPostById } from '../../utils/posts/get-post-by-id.test-util';
 import { getBlogList } from '../../utils/blogs/get-blog-list.test-util';
 import { getPostListByBlogId } from '../../utils/blogs/get-post-list-by-blog-id.test-util';
 import { deleteBlogById } from '../../utils/blogs/delete-blog-by-id.test-util';
-import { createPostInBlog } from '../../utils/blogs/create-post-in-blog.test-util';
+import { createPostForBlog } from '../../utils/blogs/create-post-for-blog.test-util';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
 import { createPost } from '../../utils/posts/create-post.test-util';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
-import { getCreateUserInputDTO } from '../../utils/users/get-create-user-input-dto.test-util';
+import { getCreateUserInputDTO } from '../../utils/users/input-dto-utils/get-create-user-input-dto.test-util';
 import { createUser } from '../../utils/users/create-user.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
 import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/comment.output-dto';
-import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
+import { createCommentForPost } from '../../utils/posts/create-comment-for-post.test-util';
 import { getCommentListByPostId } from '../../utils/posts/get-comment-list-by-post-id.test-util';
 import { getCommentById } from '../../utils/comments/get-comment-by-id.test-util';
 import { PaginatedBlogListOutputDTO } from '../../../src/blogs/routes/output-dto/paginated-blog-list.output-dto';
 import { PaginatedPostListOutputDTO } from '../../../src/posts/routes/output-dto/paginated-post-list.output-dto';
 import { validBlogNames, validBlogsPaginationSettings } from '../../test-data/blogs.test-data';
 import { validPostsPaginationSettings } from '../../test-data/posts.test-data';
+import { getUpdateBlogInputDTO } from '../../utils/blogs/input-dto-utils/get-update-blog-input-dto.test-util';
 
 describe('Blogs API', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it('✅ 001 should create a blog; POST /api/blogs', async () => {
+  it('✅ 001 should create a blog; 002. POST /api/blogs', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
 
     const createdBlogId: string = createdBlog.id;
@@ -40,7 +40,7 @@ describe('Blogs API', () => {
     expect(getBlogByIdResponse).toEqual(createdBlog);
   });
 
-  it('✅ 002 should return a blog by ID; GET /api/blogs/:id', async () => {
+  it('✅ 002 should return a blog by ID; 005. GET /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
@@ -49,7 +49,7 @@ describe('Blogs API', () => {
     expect(getBlogByIdResponse).toEqual(createdBlog);
   });
 
-  it('✅ 003 should return a list of blogs; GET /api/blogs', async () => {
+  it('✅ 003 should return a list of blogs; 001. GET /api/blogs', async () => {
     await Promise.all([createBlog(app), createBlog(app)]);
 
     const getBlogListResponse: PaginatedBlogListOutputDTO = await getBlogList(app);
@@ -59,7 +59,7 @@ describe('Blogs API', () => {
     expect(getBlogListResponse.totalCount).toBe(2);
   });
 
-  it('✅ 004 should return a list of blogs when valid pagination settings passed; GET /api/blogs', async () => {
+  it('✅ 004 should return a list of blogs when valid pagination settings passed; 001. GET /api/blogs', async () => {
     const url: string = `${SETTINGS.BLOGS_PATH}?pageSize=${validBlogsPaginationSettings.pageSize}&pageNumber=${validBlogsPaginationSettings.pageNumber}&searchNameTerm=${validBlogsPaginationSettings.searchNameTerm}&sortDirection=${validBlogsPaginationSettings.sortDirection}&sortBy=${validBlogsPaginationSettings.sortBy}`;
 
     await Promise.all([
@@ -85,7 +85,7 @@ describe('Blogs API', () => {
     expect(getBlogListResponse.items[4].name).toBe(validBlogNames.name_05);
   });
 
-  it('✅ 005 should update a blog by ID; PUT /api/blogs/:id', async () => {
+  it('✅ 005 should update a blog by ID; 006. PUT /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const updateBlogData: UpdateBlogByIdInputDTO = getUpdateBlogInputDTO();
@@ -104,7 +104,7 @@ describe('Blogs API', () => {
     });
   });
 
-  it('✅ 006 should delete a blog by ID; DELETE /api/blogs/:id', async () => {
+  it('✅ 006 should delete a blog by ID; 007. DELETE /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
@@ -113,7 +113,7 @@ describe('Blogs API', () => {
     await getBlogById(app, createdBlogId, HttpStatuses.NotFound_404);
   });
 
-  it('✅ 007 should delete a blog with its posts by ID; DELETE /api/blogs/:id', async () => {
+  it('✅ 007 should delete a blog with its posts by ID; 007. DELETE /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const createdPost_01: PostOutputDTO = await createPost(app, undefined, createdBlogId);
@@ -130,7 +130,7 @@ describe('Blogs API', () => {
     await getPostById(app, createdPostId_02, testStatus);
   });
 
-  it('✅ 008 should delete a blog with its posts and comments by ID; DELETE /api/blogs/:id', async () => {
+  it('✅ 008 should delete a blog with its posts and comments by ID; 007. DELETE /api/blogs/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const createdPost_01: PostOutputDTO = await createPost(app, undefined, createdBlogId);
@@ -145,10 +145,10 @@ describe('Blogs API', () => {
       password: createUserData.password,
     });
 
-    const createdComment_01: CommentOutputDTO = await createCommentInPost(app, createdPostId_01, accessToken);
-    const createdComment_02: CommentOutputDTO = await createCommentInPost(app, createdPostId_01, accessToken);
-    const createdComment_03: CommentOutputDTO = await createCommentInPost(app, createdPostId_02, accessToken);
-    const createdComment_04: CommentOutputDTO = await createCommentInPost(app, createdPostId_02, accessToken);
+    const createdComment_01: CommentOutputDTO = await createCommentForPost(app, createdPostId_01, accessToken);
+    const createdComment_02: CommentOutputDTO = await createCommentForPost(app, createdPostId_01, accessToken);
+    const createdComment_03: CommentOutputDTO = await createCommentForPost(app, createdPostId_02, accessToken);
+    const createdComment_04: CommentOutputDTO = await createCommentForPost(app, createdPostId_02, accessToken);
     const createdCommentId_01: string = createdComment_01.id;
     const createdCommentId_02: string = createdComment_02.id;
     const createdCommentId_03: string = createdComment_03.id;
@@ -169,21 +169,21 @@ describe('Blogs API', () => {
     await getCommentById(app, createdCommentId_04, testStatus);
   });
 
-  it('✅ 009 should create a post for a blog by ID; POST /api/blogs/:blogId/posts', async () => {
+  it('✅ 009 should create a post for a blog by ID; 004. POST /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
 
-    const createdPostInBlog: PostOutputDTO = await createPostInBlog(app, createdBlogId);
+    const createdPostInBlog: PostOutputDTO = await createPostForBlog(app, createdBlogId);
 
     const createdPostInBlogId: string = createdPostInBlog.id;
     const getPostByIdResponse: PostOutputDTO = await getPostById(app, createdPostInBlogId);
     expect(getPostByIdResponse).toEqual(createdPostInBlog);
   });
 
-  it('✅ 010 should return a list of posts for a blog by ID; GET /api/blogs/:blogId/posts', async () => {
+  it('✅ 010 should return a list of posts for a blog by ID; 003. GET /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
-    await Promise.all([createPostInBlog(app, createdBlogId), createPostInBlog(app, createdBlogId)]);
+    await Promise.all([createPostForBlog(app, createdBlogId), createPostForBlog(app, createdBlogId)]);
 
     const getPostListByBlogIdResponse: PaginatedPostListOutputDTO = await getPostListByBlogId(app, createdBlogId);
 
@@ -192,18 +192,18 @@ describe('Blogs API', () => {
     expect(getPostListByBlogIdResponse.totalCount).toBe(2);
   });
 
-  it('✅ 011 should return a list of posts for a blog by ID when valid pagination settings passed; GET /api/blogs/:blogId/posts', async () => {
+  it('✅ 011 should return a list of posts for a blog by ID when valid pagination settings passed; 003. GET /api/blogs/:blogId/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const url: string = `${SETTINGS.BLOGS_PATH}/${createdBlogId}/posts?pageSize=${validPostsPaginationSettings.pageSize}&pageNumber=${validPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
 
     await Promise.all([
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
-      createPostInBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
+      createPostForBlog(app, createdBlogId),
     ]);
 
     const getPostListByBlogIdResponse: PaginatedPostListOutputDTO = await getPostListByBlogId(app, createdBlogId, url);

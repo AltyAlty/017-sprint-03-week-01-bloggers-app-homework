@@ -1,4 +1,4 @@
-import { CreateBlogInputDTO } from '../../../src/blogs/routes/input-dto/create-blog.input-dto';
+import { CreateBlogInputDTO } from '../../../../src/blogs/routes/input-dto/create-blog.input-dto';
 
 export const getCreateBlogInputDTO = (): CreateBlogInputDTO => {
   return {

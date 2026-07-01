@@ -10,8 +10,8 @@ export const getCommentListByPostId = async (
   urlWithPagination?: string,
   expectedStatus?: HttpStatuses
 ): Promise<PaginatedCommentListOutputDTO> => {
-  const url = urlWithPagination ?? `${SETTINGS.POSTS_PATH}/${postId}/comments`;
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const url: string = urlWithPagination ?? `${SETTINGS.POSTS_PATH}/${postId}/comments`;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
   const getCommentListByPostIdResponse = await request(app).get(url).expect(testStatus);
   return getCommentListByPostIdResponse.body;
 };

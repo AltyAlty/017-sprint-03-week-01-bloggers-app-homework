@@ -10,8 +10,8 @@ export const deleteUserById = async (
   expectedStatus?: HttpStatuses,
   basicAuthToken?: string
 ): Promise<any> => {
-  const testStatus = expectedStatus ?? HttpStatuses.NoContent_204;
-  const testBasicAuthToken = basicAuthToken ?? generateBasicAuthToken();
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.NoContent_204;
+  const testBasicAuthToken: string = basicAuthToken ?? generateBasicAuthToken();
 
   const deleteUserByIdResponse = await request(app)
     .delete(`${SETTINGS.USERS_PATH}/${userId}`)

@@ -5,15 +5,26 @@ import { SETTINGS } from '../../../src/core/settings/settings';
 
 export const confirmUserByCode = async (
   app: Express,
+  userAgent: string | any,
   code: string | any,
-  expectedStatus?: HttpStatuses
+  expectedStatus?: HttpStatuses,
+  noUserAgent?: boolean
 ): Promise<any> => {
-  const testStatus = expectedStatus ?? HttpStatuses.NoContent_204;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.NoContent_204;
+  let confirmUserByCodeResponse;
 
-  const confirmUserByCodeResponse = await request(app)
-    .post(`${SETTINGS.AUTH_PATH}${SETTINGS.CONFIRM_USER_BY_CODE_PATH}`)
-    .send({ code })
-    .expect(testStatus);
+  if (noUserAgent) {
+    confirmUserByCodeResponse = await request(app)
+      .post(`${SETTINGS.AUTH_PATH}${SETTINGS.CONFIRM_USER_BY_CODE_PATH}`)
+      .send({ code })
+      .expect(testStatus);
+  } else {
+    confirmUserByCodeResponse = await request(app)
+      .post(`${SETTINGS.AUTH_PATH}${SETTINGS.CONFIRM_USER_BY_CODE_PATH}`)
+      .set('User-Agent', userAgent)
+      .send({ code })
+      .expect(testStatus);
+  }
 
   return confirmUserByCodeResponse.body;
 };

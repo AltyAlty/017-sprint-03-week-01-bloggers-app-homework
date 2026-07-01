@@ -17,6 +17,7 @@ import { SessionDBType } from '../repositories/types/session-db.type';
 import { mapToSessionList } from '../repositories/mappers/map-to-session-list.util';
 import { SessionListType } from './types/session-list.type';
 import { SecurityDeviceOutputDTO } from '../../security-devices/routes/output-dto/security-device.output-dto';
+import { ObjectId } from 'mongodb';
 
 /*Сервис для работы с аутентификацией и авторизацией.*/
 export const authService = {
@@ -38,7 +39,7 @@ export const authService = {
     /*Если проверка прошла успешно, то получаем ID пользователя.*/
     const userId: string = checkedUserCredentialsResult.data!.id;
     /*Генерируем ID устройства пользователя.*/
-    const deviceId = randomUUID();
+    const deviceId = new ObjectId().toString();
     /*Просим адаптер "jwtAdapter" создать AT.*/
     const accessToken: string = await jwtAdapter.createAccessToken(userId, SETTINGS.AT_SECRET!, SETTINGS.AT_TIME!);
 
@@ -181,7 +182,7 @@ export const authService = {
     const refreshTokenExpDate: Date = new Date(refreshTokenExp * 1000);
 
     /*Просим репозиторий "authRepository" изменить сессию по дате создания RT в БД.*/
-    await authRepository.updateSessionByIAT(currentRefreshTokenIatDate, refreshTokenIatDate, refreshTokenExpDate, ip);
+    await authRepository.updateSessionByIat(currentRefreshTokenIatDate, refreshTokenIatDate, refreshTokenExpDate, ip);
 
     /*Просим сервис "securityDevicesService" изменить устройство пользователя по ID.*/
     const updatedSecurityDeviceResult: Result<{} | null> = await securityDevicesService.updateById(
@@ -301,7 +302,7 @@ export const authService = {
     const { iat: refreshTokenIat }: { iat: number } = refreshTokenPayload;
     const refreshTokenIatDate: Date = new Date(refreshTokenIat * 1000);
     /*Просим репозиторий "authRepository" удалить сессию по дате создания RT в БД.*/
-    await authRepository.deleteSessionByIAT(refreshTokenIatDate);
+    await authRepository.deleteSessionByIat(refreshTokenIatDate);
 
     /*Возвращаем ResultObject с информацией об отзыве сессии.*/
     return {

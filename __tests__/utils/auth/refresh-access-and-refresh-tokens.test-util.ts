@@ -5,36 +5,48 @@ import request from 'supertest';
 
 export const refreshAccessAndRefreshTokens = async (
   app: Express,
-  refreshTokenCookieString?: string | any,
+  userAgent: string | any,
   refreshToken?: string | any,
-  expectedStatus?: HttpStatuses
+  refreshTokenCookieString?: string | any,
+  expectedStatus?: HttpStatuses,
+  noUserAgent?: boolean
 ): Promise<any> => {
-  const testRefreshTokenCookieString =
+  const testRefreshTokenCookieString: string =
     refreshTokenCookieString ?? `refreshToken=${refreshToken}; Path=/; HttpOnly; Secure`;
 
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
+  let refreshAccessAndRefreshTokensResponse;
 
-  const refreshAccessAndRefreshTokensResponse = await request(app)
-    .post(`${SETTINGS.AUTH_PATH}${SETTINGS.REFRESH_TOKEN_PATH}`)
-    .set('Cookie', testRefreshTokenCookieString)
-    .expect(testStatus);
+  if (noUserAgent) {
+    refreshAccessAndRefreshTokensResponse = await request(app)
+      .post(`${SETTINGS.AUTH_PATH}${SETTINGS.REFRESH_TOKEN_PATH}`)
+      .set('Cookie', testRefreshTokenCookieString)
 
-  const newAccessToken = refreshAccessAndRefreshTokensResponse.body.accessToken;
+      .expect(testStatus);
+  } else {
+    refreshAccessAndRefreshTokensResponse = await request(app)
+      .post(`${SETTINGS.AUTH_PATH}${SETTINGS.REFRESH_TOKEN_PATH}`)
+      .set('Cookie', testRefreshTokenCookieString)
+      .set('User-Agent', userAgent)
+      .expect(testStatus);
+  }
 
-  const newRefreshToken = (
+  const newAccessToken: string = refreshAccessAndRefreshTokensResponse.body.accessToken;
+
+  const newRefreshToken: string | undefined = (
     refreshAccessAndRefreshTokensResponse.headers['set-cookie'] as unknown as string[] | undefined
   )
     ?.find(cookie => cookie.startsWith('refreshToken='))
     ?.split(';')[0]
     ?.split('=')[1];
 
-  const newRefreshTokenCookieString = (
+  const newRefreshTokenCookieString: string | undefined = (
     refreshAccessAndRefreshTokensResponse.headers['set-cookie'] as unknown as string[] | undefined
   )?.find(cookie => cookie.startsWith('refreshToken='));
 
-  const hasHttpOnly = newRefreshTokenCookieString?.includes('HttpOnly');
-  const hasSecure = newRefreshTokenCookieString?.includes('Secure');
-  const hasPath = newRefreshTokenCookieString?.includes('Path=/');
+  const hasHttpOnly: boolean | undefined = newRefreshTokenCookieString?.includes('HttpOnly');
+  const hasSecure: boolean | undefined = newRefreshTokenCookieString?.includes('Secure');
+  const hasPath: boolean | undefined = newRefreshTokenCookieString?.includes('Path=/');
 
   return {
     newAccessToken,

@@ -8,7 +8,7 @@ import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-
 import { getPostById } from '../../utils/posts/get-post-by-id.test-util';
 import { createUser } from '../../utils/users/create-user.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
-import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
+import { createCommentForPost } from '../../utils/posts/create-comment-for-post.test-util';
 import { doBeforeTests, doBeforeTestsWithMongoMemoryServer } from '../../utils/common/do-before-tests.test-util';
 import { getPostList } from '../../utils/posts/get-post-list.test-util';
 import { PaginatedPostListOutputDTO } from '../../../src/posts/routes/output-dto/paginated-post-list.output-dto';
@@ -16,9 +16,9 @@ import { updatePostById } from '../../utils/posts/update-post-by-id.test-util';
 import { deletePostById } from '../../utils/posts/delete-post-by-id.test-util';
 import { getCommentListByPostId } from '../../utils/posts/get-comment-list-by-post-id.test-util';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
-import { getCreateUserInputDTO } from '../../utils/users/get-create-user-input-dto.test-util';
+import { getCreateUserInputDTO } from '../../utils/users/input-dto-utils/get-create-user-input-dto.test-util';
 import { PaginatedCommentListOutputDTO } from '../../../src/comments/routes/output-dto/paginated-comment-list.output-dto';
-import { invalidAccessTokens } from '../../test-data/auth.test-data';
+import { invalidAccessTokens, invalidBasicAuthTokens } from '../../test-data/auth.test-data';
 import { invalidBlogIds } from '../../test-data/blogs.test-data';
 import {
   invalidPostContents,
@@ -38,8 +38,8 @@ describe('Posts API validation', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it('❌ 001 should not create a post without proper basic authorization; POST /api/posts', async () => {
-    await createPost(app, undefined, undefined, HttpStatuses.Unauthorized_401, 'token');
+  it('❌ 001 should not create a post without proper basic authorization; 004. POST /api/posts', async () => {
+    await createPost(app, undefined, undefined, HttpStatuses.Unauthorized_401, invalidBasicAuthTokens.BAT_01);
 
     const getPostListResponse: PaginatedPostListOutputDTO = await getPostList(app);
     expect(getPostListResponse.items).toBeInstanceOf(Array);
@@ -47,7 +47,7 @@ describe('Posts API validation', () => {
     expect(getPostListResponse.totalCount).toBe(0);
   });
 
-  it('❌ 002 should not create a post when an invalid body passed; POST /api/posts', async () => {
+  it('❌ 002 should not create a post when an invalid body passed; 004. POST /api/posts', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -193,7 +193,7 @@ describe('Posts API validation', () => {
     expect(createPostResponse_15.errorsMessages[0].message).toBe('Field "blogId" must not be empty');
   });
 
-  it('❌ 003 should not return a post by invalid ID; GET /api/posts/:id', async () => {
+  it('❌ 003 should not return a post by invalid ID; 005. GET /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -212,7 +212,7 @@ describe('Posts API validation', () => {
     expect(getPostByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 004 should not return a list of posts when invalid pagination settings passed; GET /api/posts', async () => {
+  it('❌ 004 should not return a list of posts when invalid pagination settings passed; 003. GET /api/posts', async () => {
     const validUrl: string = `${SETTINGS.POSTS_PATH}?pageSize=${validPostsPaginationSettings.pageSize}&pageNumber=${validPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
     const invalidUrl_01: string = `${SETTINGS.POSTS_PATH}?pageSize=${invalidPostsPaginationSettings.pageSize}&pageNumber=${validPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
     const invalidUrl_02: string = `${SETTINGS.POSTS_PATH}?pageSize=${validPostsPaginationSettings.pageSize}&pageNumber=${invalidPostsPaginationSettings.pageNumber}&sortDirection=${validPostsPaginationSettings.sortDirection}&sortBy=${validPostsPaginationSettings.sortBy}`;
@@ -247,19 +247,26 @@ describe('Posts API validation', () => {
     );
   });
 
-  it('❌ 005 should not update a post by ID without proper basic authorization; PUT /api/posts/:id', async () => {
+  it('❌ 005 should not update a post by ID without proper basic authorization; 006. PUT /api/posts/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const createdPost: PostOutputDTO = await createPost(app, undefined, createdBlogId);
     const createdPostId: string = createdPost.id;
 
-    await updatePostById(app, createdPostId, createdBlogId, undefined, HttpStatuses.Unauthorized_401, 'token');
+    await updatePostById(
+      app,
+      createdPostId,
+      createdBlogId,
+      undefined,
+      HttpStatuses.Unauthorized_401,
+      invalidBasicAuthTokens.BAT_01
+    );
 
     const getPostByIdResponse: PostOutputDTO = await getPostById(app, createdPostId);
     expect(getPostByIdResponse).toEqual(createdPost);
   });
 
-  it('❌ 006 should not update a post by invalid ID; PUT /api/posts/:id', async () => {
+  it('❌ 006 should not update a post by invalid ID; 006. PUT /api/posts/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const createdPost: PostOutputDTO = await createPost(app, undefined, createdBlogId);
@@ -300,7 +307,7 @@ describe('Posts API validation', () => {
     expect(updatePostByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 007 should not update a post by ID when an invalid body passed; PUT /api/posts/:id', async () => {
+  it('❌ 007 should not update a post by ID when an invalid body passed; 006. PUT /api/posts/:id', async () => {
     const createdBlog: BlogOutputDTO = await createBlog(app);
     const createdBlogId: string = createdBlog.id;
     const createdPost: PostOutputDTO = await createPost(app, undefined, createdBlogId);
@@ -473,17 +480,17 @@ describe('Posts API validation', () => {
     expect(updatePostByIdResponse_15.errorsMessages[0].message).toBe('Field "blogId" must not be empty');
   });
 
-  it('❌ 008 should not delete a post by ID without proper basic authorization; DELETE /api/posts/:id', async () => {
+  it('❌ 008 should not delete a post by ID without proper basic authorization; 007. DELETE /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
 
-    await deletePostById(app, createdPostId, HttpStatuses.Unauthorized_401, 'token');
+    await deletePostById(app, createdPostId, HttpStatuses.Unauthorized_401, invalidBasicAuthTokens.BAT_01);
 
     const getPostByIdResponse: PostOutputDTO = await getPostById(app, createdPostId);
     expect(getPostByIdResponse).toEqual(createdPost);
   });
 
-  it('❌ 009 should not delete a post by invalid ID; DELETE /api/posts/:id', async () => {
+  it('❌ 009 should not delete a post by invalid ID; 007. DELETE /api/posts/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -502,19 +509,20 @@ describe('Posts API validation', () => {
     expect(deletePostByIdResponse_03.errorsMessages[0].message).toBe('Field "id" must be an ObjectId');
   });
 
-  it('❌ 010 should not create a comment for a post by ID without a valid access token; POST /api/posts/:postId/comments', async () => {
+  it('❌ 010 should not create a comment for a post by ID when an invalid access token passed; 002. POST /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const testStatus: HttpStatuses = HttpStatuses.Unauthorized_401;
 
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_01, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_02, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_03, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_04, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_05, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_06, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_07, undefined, testStatus);
-    await createCommentInPost(app, createdPostId, invalidAccessTokens.AT_08, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_01, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_02, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_03, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_04, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_05, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_06, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_07, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_08, undefined, testStatus);
+    await createCommentForPost(app, createdPostId, invalidAccessTokens.AT_09, undefined, testStatus);
 
     const getCommentListByPostIdResponse: PaginatedCommentListOutputDTO = await getCommentListByPostId(
       app,
@@ -526,7 +534,7 @@ describe('Posts API validation', () => {
     expect(getCommentListByPostIdResponse.totalCount).toBe(0);
   });
 
-  it('❌ 011 should not create a comment for a post by invalid ID; POST /api/posts/:postId/comments', async () => {
+  it('❌ 011 should not create a comment for a post by invalid ID; 002. POST /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -539,7 +547,7 @@ describe('Posts API validation', () => {
 
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
-    const createCommentInPostResponse_01: any = await createCommentInPost(
+    const createCommentInPostResponse_01: any = await createCommentForPost(
       app,
       invalidPostIds.id_01,
       accessToken,
@@ -547,7 +555,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_02: any = await createCommentInPost(
+    const createCommentInPostResponse_02: any = await createCommentForPost(
       app,
       invalidPostIds.id_02,
       accessToken,
@@ -555,7 +563,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_03: any = await createCommentInPost(
+    const createCommentInPostResponse_03: any = await createCommentForPost(
       app,
       invalidPostIds.id_03,
       accessToken,
@@ -563,7 +571,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_04: any = await createCommentInPost(
+    const createCommentInPostResponse_04: any = await createCommentForPost(
       app,
       invalidPostIds.id_04,
       accessToken,
@@ -589,7 +597,7 @@ describe('Posts API validation', () => {
     expect(createCommentInPostResponse_04.errorsMessages[0].message).toBe('Field "postId" must not be empty');
   });
 
-  it('❌ 012 should not create a comment for a post by ID when an invalid body passed; POST /api/posts/:postId/comments', async () => {
+  it('❌ 012 should not create a comment for a post by ID when an invalid body passed; 002. POST /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -602,7 +610,7 @@ describe('Posts API validation', () => {
 
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
 
-    const createCommentInPostResponse_01: any = await createCommentInPost(
+    const createCommentInPostResponse_01: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -610,7 +618,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_02: any = await createCommentInPost(
+    const createCommentInPostResponse_02: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -618,7 +626,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_03: any = await createCommentInPost(
+    const createCommentInPostResponse_03: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -626,7 +634,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_04: any = await createCommentInPost(
+    const createCommentInPostResponse_04: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -634,7 +642,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_05: any = await createCommentInPost(
+    const createCommentInPostResponse_05: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -642,7 +650,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_06: any = await createCommentInPost(
+    const createCommentInPostResponse_06: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -650,7 +658,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_07: any = await createCommentInPost(
+    const createCommentInPostResponse_07: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -658,7 +666,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_08: any = await createCommentInPost(
+    const createCommentInPostResponse_08: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -666,7 +674,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_09: any = await createCommentInPost(
+    const createCommentInPostResponse_09: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -674,7 +682,7 @@ describe('Posts API validation', () => {
       testStatus
     );
 
-    const createCommentInPostResponse_10: any = await createCommentInPost(
+    const createCommentInPostResponse_10: any = await createCommentForPost(
       app,
       createdPostId,
       accessToken,
@@ -724,7 +732,7 @@ describe('Posts API validation', () => {
     expect(createCommentInPostResponse_10.errorsMessages[0].message).toBe('Field "content" must be a string');
   });
 
-  it('❌ 013 should not return a list of comments for a post by invalid ID; GET /api/posts/:postId/comments', async () => {
+  it('❌ 013 should not return a list of comments for a post by invalid ID; 001. GET /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -736,8 +744,8 @@ describe('Posts API validation', () => {
     });
 
     await Promise.all([
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
     ]);
 
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;
@@ -788,7 +796,7 @@ describe('Posts API validation', () => {
     expect(getCommentListByPostIdResponse_04.errorsMessages[0].message).toBe('Field "postId" must not be empty');
   });
 
-  it('❌ 014 should not return a list of comments for a post by ID when invalid pagination settings passed; GET /api/posts/:postId/comments', async () => {
+  it('❌ 014 should not return a list of comments for a post by ID when invalid pagination settings passed; 001. GET /api/posts/:postId/comments', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const validUrl: string = `${SETTINGS.POSTS_PATH}/${createdPostId}/comments?pageSize=${validCommentsPaginationSettings.pageSize}&pageNumber=${validCommentsPaginationSettings.pageNumber}&sortDirection=${validCommentsPaginationSettings.sortDirection}&sortBy=${validCommentsPaginationSettings.sortBy}`;
@@ -805,12 +813,12 @@ describe('Posts API validation', () => {
     });
 
     await Promise.all([
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
-      createCommentInPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
+      createCommentForPost(app, createdPostId, accessToken),
     ]);
 
     const testStatus: HttpStatuses = HttpStatuses.BadRequest_400;

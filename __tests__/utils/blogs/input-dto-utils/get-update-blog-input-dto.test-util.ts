@@ -1,4 +1,4 @@
-import { UpdateBlogByIdInputDTO } from '../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
+import { UpdateBlogByIdInputDTO } from '../../../../src/blogs/routes/input-dto/update-blog-by-id.input-dto';
 
 export const getUpdateBlogInputDTO = (): UpdateBlogByIdInputDTO => {
   return {

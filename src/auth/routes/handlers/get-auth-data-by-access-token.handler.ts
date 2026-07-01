@@ -8,8 +8,8 @@ import { MeOutputDTO } from '../output-dto/me.output-dto';
 import { ExtensionType, Result } from '../../../core/types/result/result.type';
 import { UserOutputDTO } from '../../../users/routes/output-dto/user.output-dto';
 
-/*Функция-обработчик для GET-запросов по получению данных пользователя по токену.*/
-export const getAuthDataByTokenHandler = async (
+/*Функция-обработчик для GET-запросов по получению данных пользователя по AT.*/
+export const getAuthDataByAccessTokenHandler = async (
   req: Request<{}, {}, {}, {}, IdType>,
   res: Response<MeOutputDTO | ExtensionType[]>
 ): Promise<void | Response<MeOutputDTO | ExtensionType[]>> => {

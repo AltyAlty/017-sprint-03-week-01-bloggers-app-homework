@@ -1,9 +1,10 @@
 import { LoginDataInputDTO } from '../../../src/auth/routes/input-dto/login-data.input-dto';
 import { Express } from 'express';
-import { getLoginDataInputDTO } from './get-login-data-input-dto.test-util';
+import { getLoginDataInputDTO } from './input-dto-utils/get-login-data-input-dto.test-util';
 import { SETTINGS } from '../../../src/core/settings/settings';
 import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import request from 'supertest';
+import { validUserAgents } from '../../test-data/auth.test-data';
 
 export const loginUserReturnAccessToken = async (
   app: Express,
@@ -11,10 +12,11 @@ export const loginUserReturnAccessToken = async (
   expectedStatus?: HttpStatuses
 ): Promise<string> => {
   const testLoginData: LoginDataInputDTO = { ...getLoginDataInputDTO(), ...loginDataDTO };
-  const testStatus = expectedStatus ?? HttpStatuses.Ok_200;
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Ok_200;
 
   const loginUserResponse = await request(app)
     .post(`${SETTINGS.AUTH_PATH}${SETTINGS.AUTH_BY_LOGIN_OR_EMAIL_PATH}`)
+    .set('User-Agent', validUserAgents.userAgent_01)
     .send(testLoginData)
     .expect(testStatus);
 

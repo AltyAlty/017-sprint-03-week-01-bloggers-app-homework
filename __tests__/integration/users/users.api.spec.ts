@@ -9,10 +9,10 @@ import { deleteUserById } from '../../utils/users/delete-user-by-id.test-util';
 import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-dto';
 import { createPost } from '../../utils/posts/create-post.test-util';
 import { CommentOutputDTO } from '../../../src/comments/routes/output-dto/comment.output-dto';
-import { createCommentInPost } from '../../utils/posts/create-comment-in-post.test-util';
+import { createCommentForPost } from '../../utils/posts/create-comment-for-post.test-util';
 import { HttpStatuses } from '../../../src/core/types/http-statuses';
 import { CreateUserInputDTO } from '../../../src/users/routes/input-dto/create-user.input-dto';
-import { getCreateUserInputDTO } from '../../utils/users/get-create-user-input-dto.test-util';
+import { getCreateUserInputDTO } from '../../utils/users/input-dto-utils/get-create-user-input-dto.test-util';
 import { loginUserReturnAccessToken } from '../../utils/auth/login-user-return-access-token.test-util';
 import { getPostById } from '../../utils/posts/get-post-by-id.test-util';
 import { getCommentListByPostId } from '../../utils/posts/get-comment-list-by-post-id.test-util';
@@ -24,7 +24,7 @@ describe('Users API', () => {
   // const app = doBeforeTests();
   const app = doBeforeTestsWithMongoMemoryServer();
 
-  it('✅ 001 should create a user; POST /api/users', async () => {
+  it('✅ 001 should create a user; 002. POST /api/users', async () => {
     const createdUser: UserOutputDTO = await createUser(app);
 
     const getUserListResponse: PaginatedUserListOutputDTO = await getUserList(app);
@@ -34,7 +34,7 @@ describe('Users API', () => {
     expect(getUserListResponse.items[0]).toEqual(createdUser);
   });
 
-  it('✅ 002 should return a list of users; GET /api/users', async () => {
+  it('✅ 002 should return a list of users; 001. GET /api/users', async () => {
     await Promise.all([createUser(app), createUser(app)]);
 
     const getUserListResponse: PaginatedUserListOutputDTO = await getUserList(app);
@@ -44,7 +44,7 @@ describe('Users API', () => {
     expect(getUserListResponse.totalCount).toBe(2);
   });
 
-  it('✅ 003 should return a list of users when valid pagination settings passed; GET /api/users', async () => {
+  it('✅ 003 should return a list of users when valid pagination settings passed; 001. GET /api/users', async () => {
     const url: string = `${SETTINGS.USERS_PATH}?pageSize=${validUsersPaginationSettings.pageSize}&pageNumber=${validUsersPaginationSettings.pageNumber}&searchLoginTerm=${validUsersPaginationSettings.searchLoginTerm}&searchEmailTerm=${validUsersPaginationSettings.searchEmailTerm}&sortDirection=${validUsersPaginationSettings.sortDirection}&sortBy=${validUsersPaginationSettings.sortBy}`;
 
     await Promise.all([
@@ -66,7 +66,7 @@ describe('Users API', () => {
     expect(getUserListResponse.items[2].login).toBe(validUserData.data_03.login);
   });
 
-  it('✅ 004 should delete a user by ID; DELETE /api/users/:id', async () => {
+  it('✅ 004 should delete a user by ID; 003. DELETE /api/users/:id', async () => {
     const createdUser: UserOutputDTO = await createUser(app);
     const createdUserId: string = createdUser.id;
 
@@ -78,7 +78,7 @@ describe('Users API', () => {
     expect(getUserListResponse.totalCount).toBe(0);
   });
 
-  it('✅ 005 should delete a user with their comments by ID; DELETE /api/users/:id', async () => {
+  it('✅ 005 should delete a user with their comments by ID; 003. DELETE /api/users/:id', async () => {
     const createdPost: PostOutputDTO = await createPost(app);
     const createdPostId: string = createdPost.id;
     const createUserData: CreateUserInputDTO = getCreateUserInputDTO();
@@ -90,8 +90,8 @@ describe('Users API', () => {
       password: createUserData.password,
     });
 
-    const createdComment_01: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
-    const createdComment_02: CommentOutputDTO = await createCommentInPost(app, createdPostId, accessToken);
+    const createdComment_01: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
+    const createdComment_02: CommentOutputDTO = await createCommentForPost(app, createdPostId, accessToken);
     const createdCommentId_01: string = createdComment_01.id;
     const createdCommentId_02: string = createdComment_02.id;
     const testStatus: HttpStatuses = HttpStatuses.NotFound_404;

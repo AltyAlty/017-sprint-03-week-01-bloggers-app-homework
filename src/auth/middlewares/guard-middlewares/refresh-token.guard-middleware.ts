@@ -9,6 +9,7 @@ import { SessionDBType } from '../../repositories/types/session-db.type';
 import { SecurityDeviceDBType } from '../../../security-devices/repositories/types/security-device-db.type';
 import { usersRepository } from '../../../users/repositories/users.repository';
 import { UserDBType } from '../../../users/repositories/types/user-db.type';
+import { ObjectId } from 'mongodb';
 
 /*Middleware для проверки RT в запросах.*/
 export const refreshTokenGuardMiddleware = async (
@@ -19,8 +20,8 @@ export const refreshTokenGuardMiddleware = async (
   /*Получаем имя устройства пользователя из запроса.*/
   const deviceName: string | undefined = req.headers['user-agent'];
   /*Если имя устройства пользователя не было найдено, то сообщаем об отказе в аутентификации клиенту.*/
-  if (!deviceName) return res.sendStatus(HttpStatuses.Unauthorized_401);
-  /*Если имя устройства было найдено, то получаем IP-адрес пользователя из запроса.*/
+  if (!deviceName || deviceName.trim() === '') return res.sendStatus(HttpStatuses.Unauthorized_401);
+  /*Если имя устройства пользователя было найдено, то получаем IP-адрес пользователя из запроса.*/
   const ip: string | undefined = req.ip || req.socket.remoteAddress;
   /*Если IP-адрес пользователя не был найден, то сообщаем об отказе в аутентификации клиенту.*/
   if (!ip) return res.sendStatus(HttpStatuses.Unauthorized_401);
@@ -39,7 +40,14 @@ export const refreshTokenGuardMiddleware = async (
   if (!payload) return res.sendStatus(HttpStatuses.Unauthorized_401);
   /*Если верификация RT прошла успешно, то получаем ID пользователя и ID устройства пользователя из RT.*/
   const { userId: userIdFromRT, deviceId: deviceIdFromRT }: { userId: string; deviceId: string } = payload;
-  /*Просим репозиторий "usersRepository" найти пользователя по ID в БД.*/
+
+  /*Если ID пользователя или ID устройства пользователя из RT не соответствуют формату ObjectId, то сообщаем об отказе в
+  аутентификации клиенту.*/
+  if (!ObjectId.isValid(userIdFromRT) || !ObjectId.isValid(deviceIdFromRT))
+    return res.sendStatus(HttpStatuses.Unauthorized_401);
+
+  /*Если ID пользователя или ID устройства пользователя из RT соответствуют формату ObjectId, то просим репозиторий
+  "usersRepository" найти пользователя по ID в БД.*/
   const userDB: UserDBType | null = await usersRepository.findById(userIdFromRT);
   /*Если пользователь не был найден, то сообщаем об отказе в аутентификации клиенту.*/
   if (!userDB) return res.sendStatus(HttpStatuses.Unauthorized_401);

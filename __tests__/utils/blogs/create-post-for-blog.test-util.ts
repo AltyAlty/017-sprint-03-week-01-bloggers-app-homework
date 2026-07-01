@@ -4,19 +4,19 @@ import { PostOutputDTO } from '../../../src/posts/routes/output-dto/post.output-
 import { generateBasicAuthToken } from '../auth/generate-admin-auth-token.test-util';
 import request from 'supertest';
 import { SETTINGS } from '../../../src/core/settings/settings';
-import { getCreatePostInBlogInputDTO } from './get-create-post-in-blog-input-dto.test-util';
 import { CreatePostForBlogByBlogIdInputDTO } from '../../../src/posts/routes/input-dto/create-post-for-blog-by-blog-id.input-dto';
+import { getCreatePostForBlogInputDTO } from './input-dto-utils/get-create-post-for-blog-input-dto.test-util';
 
-export const createPostInBlog = async (
+export const createPostForBlog = async (
   app: Express,
   blogId: string | any,
   postDTO?: CreatePostForBlogByBlogIdInputDTO | any,
   expectedStatus?: HttpStatuses,
   basicAuthToken?: string
 ): Promise<PostOutputDTO> => {
-  const testCreatePostData = { ...getCreatePostInBlogInputDTO(), ...postDTO };
-  const testStatus = expectedStatus ?? HttpStatuses.Created_201;
-  const testBasicAuthToken = basicAuthToken ?? generateBasicAuthToken();
+  const testCreatePostData: CreatePostForBlogByBlogIdInputDTO = { ...getCreatePostForBlogInputDTO(), ...postDTO };
+  const testStatus: HttpStatuses = expectedStatus ?? HttpStatuses.Created_201;
+  const testBasicAuthToken: string = basicAuthToken ?? generateBasicAuthToken();
 
   const createPostInBlogResponse = await request(app)
     .post(`${SETTINGS.BLOGS_PATH}/${blogId}/posts`)

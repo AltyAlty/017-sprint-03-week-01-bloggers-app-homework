@@ -23,6 +23,16 @@ export const validUserData = {
   data_06: { login: 'Billy', email: 'satrun@example.abc' },
 };
 
+export const validUserLogins = {
+  login_01: 'user02',
+  login_02: 'user03',
+  login_03: 'user04',
+  login_04: 'user05',
+  login_05: 'user06',
+  login_06: 'user07',
+  login_07: 'user08',
+};
+
 export const invalidUserLogins = {
   login_01: '',
   login_02: '   ',
@@ -30,6 +40,16 @@ export const invalidUserLogins = {
   login_04: '!@#$%^&*()',
   login_05: 'ab',
   login_06: null,
+};
+
+export const validUserEmails = {
+  email_01: 'user02@example.com',
+  email_02: 'user03@example.com',
+  email_03: 'user04@example.com',
+  email_04: 'user05@example.com',
+  email_05: 'user06@example.com',
+  email_06: 'user07@example.com',
+  email_07: 'user08@example.com',
 };
 
 export const invalidUserEmails = {
@@ -44,6 +64,10 @@ export const invalidUserLoginsOrEmails = {
   loginOrEmail_01: '',
   loginOrEmail_02: '   ',
   loginOrEmail_03: null,
+};
+
+export const validUserPasswords = {
+  password_01: 'zxc321QWE654',
 };
 
 export const invalidUserPasswords = {

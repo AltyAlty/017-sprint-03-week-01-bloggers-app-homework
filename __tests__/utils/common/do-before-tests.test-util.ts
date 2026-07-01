@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Express } from 'express';
 import { setupApp } from '../../../src/setup-app';
 import { db } from '../../../src/db/mongodb/mongo.db';
 import { SETTINGS } from '../../../src/core/settings/settings';
@@ -6,9 +6,9 @@ import { clearDB } from '../db/clear-db.test-util';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 /*Функция для предварительных действий перед запуском тестов.*/
-export const doBeforeTests = () => {
+export const doBeforeTests = (): Express => {
   /*Создаем экземпляр приложения Express.*/
-  const app = express();
+  const app: Express = express();
   /*Настраиваем экземпляр приложения Express при помощи функции "setupApp()".*/
   setupApp(app);
 
@@ -32,9 +32,9 @@ export const doBeforeTests = () => {
 };
 
 /*Функция для предварительных действий перед запуском тестов, используя моковый сервер.*/
-export const doBeforeTestsWithMongoMemoryServer = () => {
+export const doBeforeTestsWithMongoMemoryServer = (): Express => {
   /*Создаем экземпляр приложения Express.*/
-  const app = express();
+  const app: Express = express();
   /*Настраиваем экземпляр приложения Express при помощи функции "setupApp()".*/
   setupApp(app);
   /*Используем моковый сервер.*/
